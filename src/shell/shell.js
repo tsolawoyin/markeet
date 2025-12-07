@@ -24,6 +24,7 @@ export default function Shell({ children, supabase_user }) {
   // Utility functions
   // Set user to user from server
   const [user, setUser] = useState(supabase_user.user);
+  
 
   // NEXT.js Hooks
   const currentPath = usePathname();
@@ -74,6 +75,10 @@ export default function Shell({ children, supabase_user }) {
       });
     },
   };
+
+  useEffect(( ) => {
+    console.log(user);
+  }, []);;
 
   return (
     <ShellContext.Provider

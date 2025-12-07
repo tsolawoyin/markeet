@@ -34,6 +34,7 @@ import nigerianInstitutions from "nigerian-institutions";
 
 import { useContext } from "react";
 import { ShellContext } from "@/shell/shell";
+import { useRouter } from "next/navigation";
 
 export default function SignupForm({ ...props }) {
   const { supabase, setUser } = useContext(ShellContext);
@@ -57,6 +58,8 @@ export default function SignupForm({ ...props }) {
   const [institutionSearch, setInstitutionSearch] = useState("");
   const [institutionResults, setInstitutionResults] = useState([]);
   const [showInstitutionDropdown, setShowInstitutionDropdown] = useState(false);
+
+  const router = useRouter();
 
   // Search institutions as user types
   useEffect(() => {
@@ -184,6 +187,8 @@ export default function SignupForm({ ...props }) {
         // Redirect to verification page
         // router.push('/verify-email');
         setUser(data.user);
+
+        router.push("/browse"); // yupyup, we just go to browse directly from there...
       } catch (error) {
         console.error("Signup error:", error);
         setError(error.message);
@@ -541,7 +546,7 @@ export default function SignupForm({ ...props }) {
                 <FieldDescription className="text-center dark:text-gray-400">
                   Already have an account?{" "}
                   <a
-                    href="#"
+                    href="/login"
                     className="text-blue-900 dark:text-blue-400 font-semibold hover:underline"
                   >
                     Sign in

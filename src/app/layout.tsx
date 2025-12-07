@@ -11,14 +11,15 @@ import { ThemeProvider } from "@/components/theme-store";
 import Header from "@/components/header/header";
 
 export const metadata: Metadata = {
-  title: "Atlas",
-  description: "JAMB Practice App Built with Next.js", // thank you.
+  title: "Markeet",
+  description:
+    "A trusted, campus-focused marketplace where verified students can easily list, discover, and transact items",
 };
 
 const open_sans = Open_Sans({
   weight: ["300", "400", "500", "600", "700", "800"],
-  subsets: ["latin"]
-})
+  subsets: ["latin"],
+});
 
 export default async function RootLayout({
   children,
@@ -26,13 +27,12 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const supabase = await createClient();
-  const { data, error } = await supabase.auth.getUser(); // simple.
+  const { data, error } = await supabase.auth.getUser();
+  console.log(data);
 
   return (
-    <html lang="en">
-      <body
-        className={`${open_sans.className} antialiased`}
-      >
+    <html lang="en" suppressHydrationWarning>
+      <body className={`${open_sans.className} antialiased`}>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
@@ -51,5 +51,5 @@ export default async function RootLayout({
   );
 }
 
-// enough of all the conventions. 
+// enough of all the conventions.
 // I should name my app's files as I see fit.
