@@ -1,34 +1,55 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Open_Sans } from "next/font/google";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
+import { createClient } from "@/utils/supabase/server";
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+// Context
+import Shell from "@/shell/shell";
+import { ThemeProvider } from "@/components/theme-store";
+
+import Header from "@/components/header/header";
 
 export const metadata: Metadata = {
-  title: "Markeet",
-  description: "Welcome to Markeet.",
+  title: "Atlas",
+  description: "JAMB Practice App Built with Next.js", // thank you.
 };
 
-export default function RootLayout({
+const open_sans = Open_Sans({
+  weight: ["300", "400", "500", "600", "700", "800"],
+  subsets: ["latin"]
+})
+
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const supabase = await createClient();
+  const { data, error } = await supabase.auth.getUser(); // simple.
+
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${open_sans.className} antialiased`}
       >
-        {children}
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <Shell supabase_user={data}>
+            <div className="w-full h-screen">
+              <Header />
+              {children}
+            </div>
+          </Shell>
+        </ThemeProvider>
       </body>
     </html>
   );
 }
+
+// enough of all the conventions. 
+// I should name my app's files as I see fit.
