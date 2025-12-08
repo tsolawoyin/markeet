@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
-import { ShoppingBag, Eye, EyeOff, Loader2 } from "lucide-react";
+import React, { useState, useTransition } from "react";
+import { ShoppingBag, Eye, EyeOff, Loader2, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -17,155 +17,180 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
-export default function LoginForm({ ...props }) {
+import { useContext } from "react";
+import { ShellContext } from "@/shell/shell";
+import { useRouter } from "next/navigation";
+
+export default function LoginForm() {
+  const { supabase, setUser } = useContext(ShellContext);
+  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isPending, startTransition] = useTransition();
+  const [error, setError] = useState(null);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
-    rememberMe: false,
   });
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setIsLoading(true);
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    console.log("Login submitted:", formData);
-    setIsLoading(false);
+  const handleSubmit = async () => {
+    setError(null);
+
+    try {
+      const { data, error: signInError } =
+        await supabase.auth.signInWithPassword({
+          email: formData.email,
+          password: formData.password,
+        });
+
+      if (signInError) throw signInError;
+
+      // Set the user in context
+      setUser(data.user);
+
+      // Redirect to home
+      router.push("/");
+    } catch (error) {
+      console.error("Login error:", error);
+      setError(error.message);
+    }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center p-4">
-      <Card
-        {...props}
-        className="w-full max-w-md dark:bg-gray-800 dark:border-gray-700"
+    <div className="min-h-screen bg-linear-to-br from-blue-50 to-blue-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center p-4 md:p-6 lg:p-8">
+      <form
+        action={async function () {
+          startTransition(handleSubmit);
+        }}
+        className="w-full max-w-md lg:max-w-lg xl:max-w-xl"
       >
-        <CardHeader className="text-center">
-          <div className="flex items-center justify-center gap-2 mb-4">
-            <div className="w-12 h-12 bg-blue-900 dark:bg-blue-600 rounded-lg flex items-center justify-center">
-              <ShoppingBag className="w-7 h-7 text-white" />
-            </div>
-            <span className="text-3xl font-bold text-blue-900 dark:text-blue-400">
-              Markeet
-            </span>
-          </div>
-          <CardTitle className="text-2xl dark:text-white">
-            Welcome Back
-          </CardTitle>
-          <CardDescription className="dark:text-gray-400">
-            Login to your campus marketplace
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <FieldGroup>
-            {/* Email Field */}
-            <Field>
-              <FieldLabel htmlFor="email" className="dark:text-gray-200">
-                Student Email
-              </FieldLabel>
-              <Input
-                id="email"
-                type="email"
-                placeholder="student@unilag.edu.ng"
-                value={formData.email}
-                onChange={(e) =>
-                  setFormData({ ...formData, email: e.target.value })
-                }
-                className="dark:bg-gray-700 dark:text-white dark:border-gray-600 dark:placeholder-gray-400"
-                required
-              />
-              <FieldDescription className="dark:text-gray-400">
-                Use your .edu.ng email address
-              </FieldDescription>
-            </Field>
-
-            {/* Password Field */}
-            <Field>
-              <div className="flex items-center justify-between mb-2">
-                <FieldLabel htmlFor="password" className="dark:text-gray-200">
-                  Password
-                </FieldLabel>
-                <a
-                  href="#"
-                  className="text-sm text-blue-900 dark:text-blue-400 hover:underline"
-                >
-                  Forgot password?
-                </a>
+        <Card className="dark:bg-gray-800 dark:border-gray-700">
+          <CardHeader className="text-center">
+            <div className="flex items-center justify-center gap-2 md:gap-3">
+              <div className="w-12 h-12 md:w-14 md:h-14 bg-blue-900 dark:bg-blue-600 rounded-lg flex items-center justify-center">
+                <ShoppingBag className="w-7 h-7 md:w-8 md:h-8 text-white" />
               </div>
-              <div className="relative">
+              <span className="text-3xl md:text-4xl font-bold text-blue-900 dark:text-blue-400">
+                Markeet
+              </span>
+            </div>
+            <CardDescription className="text-sm md:text-base dark:text-gray-400">
+              Login to your campus marketplace
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <FieldGroup>
+              {/* Email Field */}
+              <Field>
+                <FieldLabel
+                  htmlFor="email"
+                  className="dark:text-gray-200 text-sm md:text-base"
+                >
+                  Student Email
+                </FieldLabel>
                 <Input
-                  id="password"
-                  type={showPassword ? "text" : "password"}
-                  placeholder="••••••••"
-                  value={formData.password}
+                  id="email"
+                  type="email"
+                  placeholder="student@unilag.edu.ng"
+                  value={formData.email}
                   onChange={(e) =>
-                    setFormData({ ...formData, password: e.target.value })
+                    setFormData({
+                      ...formData,
+                      email: e.target.value.toLowerCase(),
+                    })
                   }
-                  className="pr-12 dark:bg-gray-700 dark:text-white dark:border-gray-600 dark:placeholder-gray-400"
+                  className="dark:bg-gray-700 dark:text-white dark:border-gray-600 dark:placeholder-gray-400 text-sm md:text-base"
                   required
                 />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-100 dark:hover:bg-gray-600 rounded transition"
+                <FieldDescription className="dark:text-gray-400 text-xs md:text-sm">
+                  Use your .edu.ng email address
+                </FieldDescription>
+              </Field>
+
+              {/* Password Field */}
+              <Field>
+                <div className="flex items-center justify-between">
+                  <FieldLabel
+                    htmlFor="password"
+                    className="dark:text-gray-200 text-sm md:text-base"
+                  >
+                    Password
+                  </FieldLabel>
+                  <a
+                    href="#"
+                    className="text-xs md:text-sm text-blue-900 dark:text-blue-400 hover:underline"
+                  >
+                    Forgot password?
+                  </a>
+                </div>
+                <div className="relative">
+                  <Input
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    placeholder="••••••••"
+                    value={formData.password}
+                    onChange={(e) =>
+                      setFormData({ ...formData, password: e.target.value })
+                    }
+                    className="pr-12 dark:bg-gray-700 dark:text-white dark:border-gray-600 dark:placeholder-gray-400 text-sm md:text-base"
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-100 dark:hover:bg-gray-600 rounded transition"
+                  >
+                    {showPassword ? (
+                      <EyeOff className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                    ) : (
+                      <Eye className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                    )}
+                  </button>
+                </div>
+              </Field>
+
+              {/* Error Alert */}
+              {error && (
+                <Alert variant="destructive">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertTitle>Login Failed</AlertTitle>
+                  <AlertDescription className="text-xs md:text-sm">
+                    {error}
+                  </AlertDescription>
+                </Alert>
+              )}
+
+              {/* Login Button */}
+              <Field>
+                <Button
+                  type="submit"
+                  disabled={isPending}
+                  className="w-full bg-blue-900 hover:bg-blue-800 dark:bg-blue-600 dark:hover:bg-blue-700 dark:text-white text-sm md:text-base py-2 md:py-3"
                 >
-                  {showPassword ? (
-                    <EyeOff className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                  {isPending ? (
+                    <>
+                      <Loader2 className="w-5 h-5 animate-spin mr-2" />
+                      Logging in...
+                    </>
                   ) : (
-                    <Eye className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                    "Login"
                   )}
-                </button>
-              </div>
-            </Field>
-
-            {/* Remember Me */}
-            <Field>
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={formData.rememberMe}
-                  onChange={(e) =>
-                    setFormData({ ...formData, rememberMe: e.target.checked })
-                  }
-                  className="w-4 h-4 text-blue-900 dark:text-blue-600 border-gray-300 dark:border-gray-600 dark:bg-gray-700 rounded focus:ring-blue-900 dark:focus:ring-blue-600"
-                />
-                <span className="text-sm text-gray-600 dark:text-gray-400">
-                  Remember me
-                </span>
-              </label>
-            </Field>
-
-            {/* Login Button */}
-            <Field>
-              <Button
-                type="button"
-                onClick={handleSubmit}
-                disabled={isLoading}
-                className="w-full bg-blue-900 hover:bg-blue-800 dark:bg-blue-600 dark:hover:bg-blue-700 dark:text-white"
-              >
-                {isLoading ? (
-                  <>
-                    <Loader2 className="w-5 h-5 animate-spin mr-2" />
-                    Logging in...
-                  </>
-                ) : (
-                  "Login"
-                )}
-              </Button>
-              <FieldDescription className="text-center dark:text-gray-400">
-                Don't have an account?{" "}
-                <a
-                  href="/sign-up"
-                  className="text-blue-900 dark:text-blue-400 font-semibold hover:underline"
-                >
-                  Sign up
-                </a>
-              </FieldDescription>
-            </Field>
-          </FieldGroup>
-        </CardContent>
-      </Card>
+                </Button>
+                <FieldDescription className="text-center dark:text-gray-400 text-xs md:text-sm">
+                  Don't have an account?{" "}
+                  <a
+                    href="/sign-up"
+                    className="text-blue-900 dark:text-blue-400 font-semibold hover:underline"
+                  >
+                    Sign up
+                  </a>
+                </FieldDescription>
+              </Field>
+            </FieldGroup>
+          </CardContent>
+        </Card>
+      </form>
     </div>
   );
 }

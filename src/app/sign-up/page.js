@@ -50,7 +50,6 @@ export default function SignupForm({ ...props }) {
   const [errors, setErrors] = useState({});
   const [error, setError] = useState(null);
   const [touched, setTouched] = useState({});
-  // const [isSubmitting, setIsSubmitting] = useState(false);
   const [isPending, startTransition] = useTransition();
   const [showPassword, setShowPassword] = useState(false);
 
@@ -137,8 +136,9 @@ export default function SignupForm({ ...props }) {
     setFormData({ ...formData, institution: school });
     setInstitutionSearch(school.name);
     setShowInstitutionDropdown(false);
-    setErrors({ ...errors, institution: "" });
+    // Mark as touched and clear error immediately on selection
     setTouched({ ...touched, institution: true });
+    setErrors({ ...errors, institution: "" });
   };
 
   const handleSubmit = async () => {
@@ -175,20 +175,15 @@ export default function SignupForm({ ...props }) {
               institution_code: formData.institution.code,
               institution_city: formData.institution.city,
             },
-            // emailRedirectTo: `${window.location.origin}/auth/callback`
           },
         });
 
         if (signupError) throw signupError;
 
-        // Success! Profile was automatically created by the trigger
-        console.log("User created:", data.user?.id);
-
-        // Redirect to verification page
-        // router.push('/verify-email');
+        // console.log("User created:", data.user?.id);
+        // This is compulsory
         setUser(data.user);
-
-        router.push("/browse"); // yupyup, we just go to browse directly from there...
+        router.push("/browse");
       } catch (error) {
         console.error("Signup error:", error);
         setError(error.message);
@@ -202,22 +197,22 @@ export default function SignupForm({ ...props }) {
   };
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-blue-50 to-blue-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-linear-to-br from-blue-50 to-blue-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center p-4 md:p-6 lg:p-8">
       <Card
         {...props}
-        className="w-full max-w-md dark:bg-gray-800 dark:border-gray-700"
+        className="w-full max-w-md lg:max-w-lg xl:max-w-xl dark:bg-gray-800 dark:border-gray-700"
       >
         <CardHeader className="text-center">
-          <div className="flex items-center justify-center gap-2 mb-4">
-            <div className="w-12 h-12 bg-blue-900 dark:bg-blue-600 rounded-lg flex items-center justify-center">
-              <ShoppingBag className="w-7 h-7 text-white" />
+          <div className="flex items-center justify-center gap-2 md:gap-3">
+            <div className="w-12 h-12 md:w-14 md:h-14 bg-blue-900 dark:bg-blue-600 rounded-lg flex items-center justify-center">
+              <ShoppingBag className="w-7 h-7 md:w-8 md:h-8 text-white" />
             </div>
-            <span className="text-3xl font-bold text-blue-900 dark:text-blue-400">
+            <span className="text-3xl md:text-4xl font-bold text-blue-900 dark:text-blue-400">
               Markeet
             </span>
           </div>
-          <CardTitle className="dark:text-white">Create an account</CardTitle>
-          <CardDescription className="dark:text-gray-400">
+          <CardTitle className="dark:text-white text-xl md:text-2xl">Create an account</CardTitle>
+          <CardDescription className="dark:text-gray-400 text-sm md:text-base">
             Join Nigeria's verified student marketplace
           </CardDescription>
         </CardHeader>
@@ -241,13 +236,13 @@ export default function SignupForm({ ...props }) {
                     value={formData.fullName}
                     onChange={(e) => handleChange("fullName", e.target.value)}
                     onBlur={() => handleBlur("fullName")}
-                    className={
+                    className={`text-sm md:text-base ${
                       getFieldState("fullName") === "error"
                         ? "border-red-500 focus-visible:ring-red-200 dark:border-red-400 dark:focus-visible:ring-red-900 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400"
                         : getFieldState("fullName") === "success"
                         ? "border-green-500 focus-visible:ring-green-200 dark:border-green-400 dark:focus-visible:ring-green-900 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400"
                         : "dark:bg-gray-700 dark:text-white dark:border-gray-600 dark:placeholder-gray-400"
-                    }
+                    }`}
                     required
                   />
                   {getFieldState("fullName") === "success" && (
@@ -258,7 +253,7 @@ export default function SignupForm({ ...props }) {
                   )}
                 </div>
                 {touched.fullName && errors.fullName && (
-                  <FieldDescription className="text-red-600 dark:text-red-400 flex items-center gap-1">
+                  <FieldDescription className="text-red-600 dark:text-red-400 flex items-center gap-1 text-xs md:text-sm">
                     <AlertCircle className="w-3 h-3" />
                     {errors.fullName}
                   </FieldDescription>
@@ -280,13 +275,13 @@ export default function SignupForm({ ...props }) {
                       handleChange("email", e.target.value.toLowerCase())
                     }
                     onBlur={() => handleBlur("email")}
-                    className={
+                    className={`text-sm md:text-base ${
                       getFieldState("email") === "error"
                         ? "border-red-500 focus-visible:ring-red-200 dark:border-red-400 dark:focus-visible:ring-red-900 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400"
                         : getFieldState("email") === "success"
                         ? "border-green-500 focus-visible:ring-green-200 dark:border-green-400 dark:focus-visible:ring-green-900 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400"
                         : "dark:bg-gray-700 dark:text-white dark:border-gray-600 dark:placeholder-gray-400"
-                    }
+                    }`}
                     required
                   />
                   {getFieldState("email") === "success" && (
@@ -297,12 +292,12 @@ export default function SignupForm({ ...props }) {
                   )}
                 </div>
                 {touched.email && errors.email ? (
-                  <FieldDescription className="text-red-600 dark:text-red-400 flex items-center gap-1">
+                  <FieldDescription className="text-red-600 dark:text-red-400 flex items-center gap-1 text-xs md:text-sm">
                     <AlertCircle className="w-3 h-3" />
                     {errors.email}
                   </FieldDescription>
                 ) : (
-                  <FieldDescription className="flex items-center gap-1 dark:text-gray-400">
+                  <FieldDescription className="flex items-center gap-1 dark:text-gray-400 text-xs md:text-sm">
                     <Shield className="w-3 h-3 text-green-600 dark:text-green-400" />
                     Only .edu.ng emails accepted
                   </FieldDescription>
@@ -313,7 +308,7 @@ export default function SignupForm({ ...props }) {
               <Field>
                 <FieldLabel
                   htmlFor="institution"
-                  className="dark:text-gray-200"
+                  className="dark:text-gray-200 text-sm md:text-base"
                 >
                   Institution *
                 </FieldLabel>
@@ -332,7 +327,10 @@ export default function SignupForm({ ...props }) {
                       onBlur={() => {
                         setTimeout(() => {
                           setShowInstitutionDropdown(false);
-                          handleBlur("institution");
+                          // Only validate on blur if no institution is selected
+                          if (!formData.institution) {
+                            handleBlur("institution");
+                          }
                         }, 200);
                       }}
                       onFocus={() => {
@@ -341,13 +339,13 @@ export default function SignupForm({ ...props }) {
                         }
                       }}
                       placeholder="Search university, polytechnic, or college..."
-                      className={
+                      className={`text-sm md:text-base ${
                         getFieldState("institution") === "error"
                           ? "border-red-500 focus-visible:ring-red-200 pr-10 dark:border-red-400 dark:focus-visible:ring-red-900 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400"
                           : getFieldState("institution") === "success"
                           ? "border-green-500 focus-visible:ring-green-200 pr-10 dark:border-green-400 dark:focus-visible:ring-green-900 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400"
                           : "pr-10 dark:bg-gray-700 dark:text-white dark:border-gray-600 dark:placeholder-gray-400"
-                      }
+                      }`}
                       required
                     />
                     <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 dark:text-gray-500" />
@@ -362,10 +360,10 @@ export default function SignupForm({ ...props }) {
                           onClick={() => selectInstitution(school)}
                           className="w-full px-4 py-3 text-left hover:bg-blue-50 dark:hover:bg-gray-600 border-b border-gray-100 dark:border-gray-600 last:border-0 transition"
                         >
-                          <div className="font-medium text-gray-900 dark:text-white">
+                          <div className="font-medium text-gray-900 dark:text-white text-sm md:text-base">
                             {school.name}
                           </div>
-                          <div className="text-sm text-gray-600 dark:text-gray-400">
+                          <div className="text-xs md:text-sm text-gray-600 dark:text-gray-400">
                             {school.city} • {school.code}
                           </div>
                         </button>
@@ -377,7 +375,7 @@ export default function SignupForm({ ...props }) {
                     institutionSearch.length > 0 &&
                     institutionResults.length === 0 && (
                       <div className="absolute z-10 w-full mt-1 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg p-4">
-                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                        <p className="text-xs md:text-sm text-gray-600 dark:text-gray-400">
                           No institutions found. Try a different search.
                         </p>
                       </div>
@@ -385,19 +383,19 @@ export default function SignupForm({ ...props }) {
                 </div>
 
                 {touched.institution && errors.institution ? (
-                  <FieldDescription className="text-red-600 dark:text-red-400 flex items-center gap-1">
+                  <FieldDescription className="text-red-600 dark:text-red-400 flex items-center gap-1 text-xs md:text-sm">
                     <AlertCircle className="w-3 h-3" />
                     {errors.institution}
                   </FieldDescription>
                 ) : formData.institution ? (
                   <div className="mt-2 flex items-center gap-2 px-3 py-2 bg-blue-50 dark:bg-blue-900/30 rounded-lg">
                     <Check className="w-4 h-4 text-blue-900 dark:text-blue-400" />
-                    <span className="text-sm text-blue-900 dark:text-blue-400 font-medium">
+                    <span className="text-xs md:text-sm text-blue-900 dark:text-blue-400 font-medium">
                       {formData.institution.name}
                     </span>
                   </div>
                 ) : (
-                  <FieldDescription className="dark:text-gray-400">
+                  <FieldDescription className="dark:text-gray-400 text-xs md:text-sm">
                     Type to search all Nigerian universities, polytechnics, and
                     colleges
                   </FieldDescription>
@@ -406,7 +404,7 @@ export default function SignupForm({ ...props }) {
 
               {/* Phone Number */}
               <Field>
-                <FieldLabel htmlFor="phone" className="dark:text-gray-200">
+                <FieldLabel htmlFor="phone" className="dark:text-gray-200 text-sm md:text-base">
                   Phone Number *
                 </FieldLabel>
                 <div className="relative">
@@ -417,13 +415,13 @@ export default function SignupForm({ ...props }) {
                     value={formData.phone}
                     onChange={(e) => handleChange("phone", e.target.value)}
                     onBlur={() => handleBlur("phone")}
-                    className={
+                    className={`text-sm md:text-base ${
                       getFieldState("phone") === "error"
                         ? "border-red-500 focus-visible:ring-red-200 dark:border-red-400 dark:focus-visible:ring-red-900 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400"
                         : getFieldState("phone") === "success"
                         ? "border-green-500 focus-visible:ring-green-200 dark:border-green-400 dark:focus-visible:ring-green-900 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400"
                         : "dark:bg-gray-700 dark:text-white dark:border-gray-600 dark:placeholder-gray-400"
-                    }
+                    }`}
                     required
                   />
                   {getFieldState("phone") === "success" && (
@@ -434,12 +432,12 @@ export default function SignupForm({ ...props }) {
                   )}
                 </div>
                 {touched.phone && errors.phone ? (
-                  <FieldDescription className="text-red-600 dark:text-red-400 flex items-center gap-1">
+                  <FieldDescription className="text-red-600 dark:text-red-400 flex items-center gap-1 text-xs md:text-sm">
                     <AlertCircle className="w-3 h-3" />
                     {errors.phone}
                   </FieldDescription>
                 ) : (
-                  <FieldDescription className="dark:text-gray-400">
+                  <FieldDescription className="dark:text-gray-400 text-xs md:text-sm">
                     Nigerian phone number (080, 070, 090 format)
                   </FieldDescription>
                 )}
@@ -447,7 +445,7 @@ export default function SignupForm({ ...props }) {
 
               {/* Password with Toggle Visibility */}
               <Field>
-                <FieldLabel htmlFor="password" className="dark:text-gray-200">
+                <FieldLabel htmlFor="password" className="dark:text-gray-200 text-sm md:text-base">
                   Password *
                 </FieldLabel>
                 <div className="relative">
@@ -458,13 +456,13 @@ export default function SignupForm({ ...props }) {
                     value={formData.password}
                     onChange={(e) => handleChange("password", e.target.value)}
                     onBlur={() => handleBlur("password")}
-                    className={
+                    className={`text-sm md:text-base ${
                       getFieldState("password") === "error"
                         ? "border-red-500 focus-visible:ring-red-200 pr-20 dark:border-red-400 dark:focus-visible:ring-red-900 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400"
                         : getFieldState("password") === "success"
                         ? "border-green-500 focus-visible:ring-green-200 pr-20 dark:border-green-400 dark:focus-visible:ring-green-900 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400"
                         : "pr-20 dark:bg-gray-700 dark:text-white dark:border-gray-600 dark:placeholder-gray-400"
-                    }
+                    }`}
                     required
                   />
                   <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1">
@@ -488,12 +486,12 @@ export default function SignupForm({ ...props }) {
                   </div>
                 </div>
                 {touched.password && errors.password ? (
-                  <FieldDescription className="text-red-600 dark:text-red-400 flex items-center gap-1">
+                  <FieldDescription className="text-red-600 dark:text-red-400 flex items-center gap-1 text-xs md:text-sm">
                     <AlertCircle className="w-3 h-3" />
                     {errors.password}
                   </FieldDescription>
                 ) : (
-                  <FieldDescription className="dark:text-gray-400">
+                  <FieldDescription className="dark:text-gray-400 text-xs md:text-sm">
                     Min. 8 characters with uppercase, lowercase, and number
                   </FieldDescription>
                 )}
@@ -512,14 +510,14 @@ export default function SignupForm({ ...props }) {
                     className="mt-1 w-4 h-4 text-blue-900 dark:text-blue-600 border-gray-300 dark:border-gray-600 dark:bg-gray-700 rounded focus:ring-blue-900 dark:focus:ring-blue-600"
                     required
                   />
-                  <span className="text-sm text-gray-600 dark:text-gray-400">
+                  <span className="text-xs md:text-sm text-gray-600 dark:text-gray-400">
                     I agree to the Terms of Service and Community Guidelines. I
                     understand this platform is for verified Nigerian students
                     only.
                   </span>
                 </label>
                 {touched.agreeToTerms && errors.agreeToTerms && (
-                  <FieldDescription className="text-red-600 dark:text-red-400 flex items-center gap-1 ml-7">
+                  <FieldDescription className="text-red-600 dark:text-red-400 flex items-center gap-1 ml-7 text-xs md:text-sm">
                     <AlertCircle className="w-3 h-3" />
                     {errors.agreeToTerms}
                   </FieldDescription>
@@ -532,7 +530,7 @@ export default function SignupForm({ ...props }) {
                   type="submit"
                   variant={"default"}
                   disabled={isPending}
-                  className="w-full bg-blue-900 hover:bg-blue-800 dark:bg-blue-600 dark:hover:bg-blue-700 dark:text-white"
+                  className="w-full bg-blue-900 hover:bg-blue-800 dark:bg-blue-600 dark:hover:bg-blue-700 dark:text-white text-sm md:text-base py-2 md:py-3"
                 >
                   {isPending ? (
                     <>
@@ -543,7 +541,7 @@ export default function SignupForm({ ...props }) {
                     "Create Account"
                   )}
                 </Button>
-                <FieldDescription className="text-center dark:text-gray-400">
+                <FieldDescription className="text-center dark:text-gray-400 text-xs md:text-sm">
                   Already have an account?{" "}
                   <a
                     href="/login"
