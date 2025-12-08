@@ -34,26 +34,7 @@ const MockupViewer = () => {
   const LandingPage = () => (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100">
       {/* Header */}
-      <nav className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-          <div className="flex items-center gap-2">
-            <div className="w-10 h-10 bg-blue-900 rounded-lg flex items-center justify-center">
-              <ShoppingBag className="w-6 h-6 text-white" />
-            </div>
-            <div>
-              <span className="text-2xl font-bold text-blue-900">UITrade</span>
-              <div className="text-xs text-gray-600">Verified Student Marketplace</div>
-            </div>
-          </div>
-          <div className="hidden md:flex gap-4">
-            <button className="px-4 py-2 text-gray-700 hover:text-blue-900">How it Works</button>
-            <button className="px-4 py-2 text-gray-700 hover:text-blue-900">Safety</button>
-            <button className="px-4 py-2 border border-blue-900 text-blue-900 rounded-lg hover:bg-blue-50">Login</button>
-            <button className="px-4 py-2 bg-blue-900 text-white rounded-lg hover:bg-blue-800">Sign Up</button>
-          </div>
-          <button className="md:hidden"><Menu className="w-6 h-6" /></button>
-        </div>
-      </nav>
+      
 
       {/* Hero Section */}
       <div className="max-w-7xl mx-auto px-4 py-16 md:py-24">

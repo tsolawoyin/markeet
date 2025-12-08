@@ -1,34 +1,71 @@
+"use client";
+
 import { Search, MessageCircle, User, Plus, Home, Users } from "lucide-react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+
+const navigationItems = [
+  {
+    url: "/",
+    name: "Home",
+    icon: Home,
+  },
+//   {
+//     url: "/search",
+//     name: "Search",
+//     icon: Search,
+//   },
+  {
+    url: "/post",
+    name: "Post",
+    icon: Plus,
+  },
+//   {
+//     url: "/campus",
+//     name: "Campus",
+//     icon: Users,
+//   },
+  {
+    url: "/messages",
+    name: "Messages",
+    icon: MessageCircle,
+    badge: true,
+  },
+  {
+    url: "/profile",
+    name: "Profile",
+    icon: User,
+  },
+];
 
 export default function Footer() {
+  const pathname = usePathname();
+
   return (
-    <footer className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 pb-safe">
+    <footer className="md:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 pb-safe">
       <div className="flex justify-around py-3">
-        <button className="flex flex-col items-center gap-1 text-blue-900">
-          <Home className="w-6 h-6" />
-          <span className="text-xs">Home</span>
-        </button>
-        <button className="flex flex-col items-center gap-1 text-gray-600">
-          <Search className="w-6 h-6" />
-          <span className="text-xs">Search</span>
-        </button>
-        <button className="flex flex-col items-center gap-1 text-gray-600">
-          <Plus className="w-6 h-6" />
-          <span className="text-xs">Post</span>
-        </button>
-        <button className="flex flex-col items-center gap-1 text-gray-600">
-          <Users className="w-6 h-6" />
-          <span className="text-xs">Campus</span>
-        </button>
-        <button className="flex flex-col items-center gap-1 text-gray-600 relative">
-          <MessageCircle className="w-6 h-6" />
-          <span className="text-xs">Messages</span>
-          <span className="absolute top-0 right-3 w-2 h-2 bg-red-500 rounded-full"></span>
-        </button>
-        <button className="flex flex-col items-center gap-1 text-gray-600">
-          <User className="w-6 h-6" />
-          <span className="text-xs">Profile</span>
-        </button>
+        {navigationItems.map((item) => {
+          const Icon = item.icon;
+          const isActive = pathname === item.url;
+
+          return (
+            <Link
+              key={item.url}
+              href={item.url}
+              className={`flex flex-col items-center gap-1 relative ${
+                isActive
+                  ? "text-blue-900 dark:text-blue-400"
+                  : "text-gray-600 dark:text-gray-400"
+              }`}
+            >
+              <Icon className="w-6 h-6" />
+              <span className="text-xs">{item.name}</span>
+              {item.badge && (
+                <span className="absolute top-0 right-3 w-2 h-2 bg-red-500 rounded-full"></span>
+              )}
+            </Link>
+          );
+        })}
       </div>
     </footer>
   );

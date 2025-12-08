@@ -43,7 +43,7 @@ export default function Shell({ children, supabase_user }) {
         console.log(user);
       } else if (event === "SIGNED_OUT") {
         setUser(null);
-        router.push("/");
+        router.push("/login");
       } else if (event === "PASSWORD_RECOVERY") {
         // handle password recovery event
       } else if (event === "TOKEN_REFRESHED") {
@@ -72,7 +72,7 @@ export default function Shell({ children, supabase_user }) {
     >
       <div className="w-full h-screen">
         {user && <Header />}
-        {children}
+        <div className="">{children}</div>
         {user && <Footer />}
       </div>
     </ShellContext.Provider>
