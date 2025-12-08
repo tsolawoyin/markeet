@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useTransition } from "react";
-import { ShoppingBag, Eye, EyeOff, Loader2, AlertCircle } from "lucide-react";
+import { ShoppingBag, Eye, EyeOff, Loader, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -36,7 +36,7 @@ export default function LoginForm() {
 
   const handleSubmit = async () => {
     setError(null);
-
+    console.log(formData);
     try {
       const { data, error: signInError } =
         await supabase.auth.signInWithPassword({
@@ -92,7 +92,7 @@ export default function LoginForm() {
                 <Input
                   id="email"
                   type="email"
-                  placeholder="student@unilag.edu.ng"
+                  placeholder="student@ui.edu.ng"
                   value={formData.email}
                   onChange={(e) =>
                     setFormData({
@@ -170,7 +170,7 @@ export default function LoginForm() {
                 >
                   {isPending ? (
                     <>
-                      <Loader2 className="w-5 h-5 animate-spin mr-2" />
+                      <Loader className="w-5 h-5 animate-spin mr-2" />
                       Logging in...
                     </>
                   ) : (
