@@ -34,10 +34,7 @@ const Dynamic = async ({ children }: any) => {
   // I don tire for all these rules and regulations.
   return (
     <Shell supabase_user={data}>
-      <div className="w-full h-screen">
-        <Header />
-        {children}
-      </div>
+      {children}
     </Shell>
   )
 }

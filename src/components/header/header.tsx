@@ -9,9 +9,14 @@ import { ShellContext } from "@/shell/shell";
 import { Button } from "../ui/button";
 
 export default function Header() {
-    const { user, auth: { signOut } } = useContext(ShellContext);
+    const { supabase, setUser } = useContext(ShellContext);
 
-    return user && (
+    // nice and easy...
+    async function signOut () {
+      await supabase.auth.signOut();
+    }
+
+    return (
         <div className="px-4 mt-3 flex items-center justify-between">
             {/* <Logo /> */}
             <p></p>

@@ -12,6 +12,9 @@ import { createClient } from "@/utils/supabase/client";
 // Dexie
 import { db } from "./shell-local-db";
 
+import Header from "@/components/header/header";
+import Footer from "@/components/footer/footer";
+
 export const ShellContext = createContext();
 
 export default function Shell({ children, supabase_user }) {
@@ -24,67 +27,54 @@ export default function Shell({ children, supabase_user }) {
   // Utility functions
   // Set user to user from server
   const [user, setUser] = useState(supabase_user.user);
-  
 
   // NEXT.js Hooks
   const currentPath = usePathname();
   const router = useRouter();
 
   // Auth functions
-  const auth = {
-    login: async function (credentials) {
-      // credentials is an object
-      let { data, error } = await supabase.auth.signInWithPassword(credentials);
-
-      // simple as abc
-      setUser(data.user);
-
-      if (error) {
-        throw new Error(error);
+  function authStateChange() {
+    return supabase.auth.onAuthStateChange((event) => {
+      // Update context/state when auth changes
+      if (event === "INITIAL_SESSION") {
+        console.log("Welcome home User");
+      } else if (event === "SIGNED_IN") {
+        console.log("User Signed in");
+        console.log(user);
+      } else if (event === "SIGNED_OUT") {
+        setUser(null);
+        router.push("/");
+      } else if (event === "PASSWORD_RECOVERY") {
+        // handle password recovery event
+      } else if (event === "TOKEN_REFRESHED") {
+        // handle token refreshed event
+      } else if (event === "USER_UPDATED") {
+        // handle user updated event
       }
+    });
+  }
 
-      router.push("/");
-    },
-
-    signOut: async function () {
-      await supabase.auth.signOut();
-      setUser(null);
-      router.push("/login");
-    },
-
-    // So for now this is not that useful
-    authStateChange: function () {
-      return supabase.auth.onAuthStateChange((event) => {
-        // Update context/state when auth changes
-        if (event === "INITIAL_SESSION") {
-          console.log("Welcome home User");
-        } else if (event === "SIGNED_IN") {
-          console.log("User Signed in");
-          console.log(user);
-        } else if (event === "SIGNED_OUT") {
-          // handle sign out event
-          // console.log("User signed out");
-          setUser(null);
-        } else if (event === "PASSWORD_RECOVERY") {
-          // handle password recovery event
-        } else if (event === "TOKEN_REFRESHED") {
-          // handle token refreshed event
-        } else if (event === "USER_UPDATED") {
-          // handle user updated event
-        }
-      });
-    },
-  };
-
-  useEffect(( ) => {
+  useEffect(() => {
     console.log(user);
-  }, []);;
+  }, []);
+
+  useEffect(() => {
+    const authState = authStateChange();
+
+    return () => {
+      authState.data.subscription.unsubscribe();
+    };
+  }, []); // nice and easy. thanks.
 
   return (
     <ShellContext.Provider
-      value={{ user, setUser, supabase, currentPath, dexie, auth }}
+      value={{ user, setUser, supabase, currentPath, dexie }}
     >
-      {children}
+      <div className="w-full h-screen">
+        {user && <Header />}
+        {children}
+        {user && <Footer />}
+      </div>
     </ShellContext.Provider>
   );
 }
