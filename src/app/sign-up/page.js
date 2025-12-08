@@ -36,7 +36,7 @@ import { useContext } from "react";
 import { ShellContext } from "@/shell/shell";
 import { useRouter } from "next/navigation";
 
-export default function SignupForm({ ...props }) {
+export default function SignupForm() {
   const { supabase, setUser } = useContext(ShellContext);
   const [formData, setFormData] = useState({
     fullName: "",
@@ -199,7 +199,6 @@ export default function SignupForm({ ...props }) {
   return (
     <div className="min-h-screen bg-linear-to-br from-blue-50 to-blue-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center p-4 md:p-6 lg:p-8">
       <Card
-        {...props}
         className="w-full max-w-md lg:max-w-lg xl:max-w-xl dark:bg-gray-800 dark:border-gray-700"
       >
         <CardHeader className="text-center">
