@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 
 const navigationItems = [
   {
-    url: "/",
+    url: "/browse",
     name: "Home",
     icon: Home,
   },
@@ -16,7 +16,7 @@ const navigationItems = [
 //     icon: Search,
 //   },
   {
-    url: "/post",
+    url: "/create",
     name: "Post",
     icon: Plus,
   },
@@ -25,17 +25,17 @@ const navigationItems = [
 //     name: "Campus",
 //     icon: Users,
 //   },
-  {
-    url: "/messages",
-    name: "Messages",
-    icon: MessageCircle,
-    badge: true,
-  },
-  {
-    url: "/profile",
-    name: "Profile",
-    icon: User,
-  },
+//   {
+//     url: "/messages",
+//     name: "Messages",
+//     icon: MessageCircle,
+//     badge: true,
+//   },
+//   {
+//     url: "/profile",
+//     name: "Profile",
+//     icon: User,
+//   },
 ];
 
 export default function Footer() {
@@ -46,7 +46,7 @@ export default function Footer() {
       <div className="flex justify-around py-3">
         {navigationItems.map((item) => {
           const Icon = item.icon;
-          const isActive = pathname === item.url;
+          const isActive = pathname.includes(item.url);
 
           return (
             <Link

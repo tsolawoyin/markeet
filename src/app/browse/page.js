@@ -5,15 +5,11 @@ import {
   Search,
   MapPin,
   Clock,
-  Star,
   Filter,
   X,
   BookOpen,
   Laptop,
-  Sofa,
-  Shirt,
-  Ticket,
-  Wrench,
+  Home,
   Package,
   Loader2,
 } from "lucide-react";
@@ -22,35 +18,28 @@ import { Input } from "@/components/ui/input";
 
 import { useContext } from "react";
 import { ShellContext } from "@/shell/shell";
+import Link from "next/link";
 
 const categories = [
   { id: "all", name: "All Items", icon: Package },
   { id: "textbooks", name: "Textbooks", icon: BookOpen },
-  { id: "electronics", name: "Electronics", icon: Laptop },
-  { id: "furniture", name: "Furniture", icon: Sofa },
-  { id: "clothing", name: "Clothing", icon: Shirt },
-  { id: "sports-fitness", name: "Sports & Fitness", icon: Package },
-  { id: "kitchen-appliances", name: "Kitchen", icon: Package },
-  { id: "room-decor", name: "Room Decor", icon: Package },
-  { id: "tickets-events", name: "Tickets", icon: Ticket },
-  { id: "services", name: "Services", icon: Wrench },
-  { id: "stationery", name: "Stationery", icon: Package },
-  { id: "musical-instruments", name: "Music", icon: Package },
-  { id: "beauty-personal-care", name: "Beauty", icon: Package },
-  { id: "books-novels", name: "Books", icon: BookOpen },
-  { id: "gaming-entertainment", name: "Gaming", icon: Package },
+  { id: "phones & laptops", name: "Phones & Laptops", icon: Laptop },
+  { id: "hostel essentials", name: "Hostel Essentials", icon: Home },
 ];
 
-const universities = [
-  { id: "all", name: "All Universities" },
-  { id: "University of Ibadan", name: "University of Ibadan" },
-  { id: "University of Lagos", name: "University of Lagos" },
-  {
-    id: "Obafemi Awolowo University,Ile-Ife",
-    name: "Obafemi Awolowo University",
-  },
-  { id: "Covenant University", name: "Covenant University" },
-  { id: "Nigerian Defence Academy Kaduna", name: "Nigerian Defence Academy" },
+// UI Halls of Residence
+const hallsOfResidence = [
+  { id: "all", name: "All Halls" },
+  { id: "tedder", name: "Tedder Hall" },
+  { id: "queen-elizabeth", name: "Queen Elizabeth Hall" },
+  { id: "queen-idia", name: "Queen Idia Hall" },
+  { id: "obafemi-awolowo", name: "Obafemi Awolowo Hall" },
+  { id: "nnamdi-azikiwe", name: "Nnamdi Azikiwe Hall" },
+  { id: "sultan-bello", name: "Sultan Bello Hall" },
+  { id: "independence", name: "Independence Hall" },
+  { id: "mellanby", name: "Mellanby Hall" },
+  { id: "kuti", name: "Kuti Hall" },
+  { id: "off-campus", name: "Off Campus" },
 ];
 
 const ITEMS_PER_PAGE = 12;
@@ -60,20 +49,13 @@ const gradientColors = [
   "from-purple-100 to-purple-200",
   "from-green-100 to-green-200",
   "from-pink-100 to-pink-200",
-  "from-indigo-100 to-indigo-200",
-  "from-yellow-100 to-yellow-200",
-  "from-cyan-100 to-cyan-200",
-  "from-orange-100 to-orange-200",
-  "from-red-100 to-red-200",
-  "from-gray-100 to-gray-200",
 ];
 
 export default function HomePage() {
-  // owapa... nice one.
-  const { supabase } = useContext(ShellContext);
+  const { supabase, user } = useContext(ShellContext);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
-  const [selectedUniversity, setSelectedUniversity] = useState("all");
+  const [selectedHall, setSelectedHall] = useState("all");
   const [showFilters, setShowFilters] = useState(false);
   const [listings, setListings] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -82,7 +64,7 @@ export default function HomePage() {
   const [totalCount, setTotalCount] = useState(0);
   const [page, setPage] = useState(0);
 
-  const userUniversity = "University of Ibadan";
+  const userHall = user?.user_metadata?.hall_of_residence || "";
   const observerTarget = useRef(null);
 
   // Fetch listings from Supabase
@@ -105,8 +87,8 @@ export default function HomePage() {
           query = query.eq("category", selectedCategory);
         }
 
-        if (selectedUniversity !== "all") {
-          query = query.eq("university", selectedUniversity);
+        if (selectedHall !== "all") {
+          query = query.eq("hall_of_residence", selectedHall);
         }
 
         if (searchQuery.trim()) {
@@ -122,16 +104,16 @@ export default function HomePage() {
         const { data, error, count } = await query;
         if (error) throw error;
 
-        // Sort: user's university first
+        // Sort: user's hall first
         const sortedData = data.sort((a, b) => {
           if (
-            a.university === userUniversity &&
-            b.university !== userUniversity
+            a.hall_of_residence === userHall &&
+            b.hall_of_residence !== userHall
           )
             return -1;
           if (
-            a.university !== userUniversity &&
-            b.university === userUniversity
+            a.hall_of_residence !== userHall &&
+            b.hall_of_residence === userHall
           )
             return 1;
           return 0;
@@ -143,33 +125,24 @@ export default function HomePage() {
           setListings(sortedData);
         }
 
-        // Update total count from Supabase
         setTotalCount(count || 0);
-
-        // Check if there are more items to load
         setHasMore(data.length === ITEMS_PER_PAGE);
       } catch (error) {
         console.error("Error fetching listings:", error);
-        setHasMore(false); // Stop trying to load more on error
+        setHasMore(false);
       } finally {
         setLoading(false);
         setLoadingMore(false);
       }
     },
-    [
-      selectedCategory,
-      selectedUniversity,
-      searchQuery,
-      userUniversity,
-      supabase,
-    ]
+    [selectedCategory, selectedHall, searchQuery, userHall, supabase]
   );
 
   useEffect(() => {
     setPage(0);
-    setHasMore(true); // Reset hasMore when filters change
+    setHasMore(true);
     fetchListings(0, false);
-  }, [selectedCategory, selectedUniversity, searchQuery, fetchListings]);
+  }, [selectedCategory, selectedHall, searchQuery, fetchListings]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -214,6 +187,7 @@ export default function HomePage() {
     return gradientColors[index % gradientColors.length];
   };
 
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pb-10">
       <div className="max-w-7xl mx-auto px-4 py-6">
@@ -223,7 +197,7 @@ export default function HomePage() {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
             <Input
               type="text"
-              placeholder="Search for items, textbooks, electronics..."
+              placeholder="Search for items, textbooks, laptops..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="pl-10 pr-4 py-3 w-full text-base dark:bg-gray-800 dark:text-white dark:border-gray-700 dark:placeholder-gray-400"
@@ -231,7 +205,7 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* Quick Categories */}
+        {/* Quick Categories - Horizontal Scroll on Mobile */}
         <div className="mb-6">
           <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
             {categories.map((category) => {
@@ -274,7 +248,7 @@ export default function HomePage() {
           >
             <Filter className="w-4 h-4" />
             <span className="hidden sm:inline">Filters</span>
-            {selectedUniversity !== "all" && (
+            {selectedHall !== "all" && (
               <span className="w-2 h-2 bg-blue-600 rounded-full"></span>
             )}
           </Button>
@@ -285,7 +259,7 @@ export default function HomePage() {
           <div className="mb-6 p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-semibold text-gray-900 dark:text-white">
-                Filter by University
+                Filter by Hall of Residence
               </h3>
               <button
                 onClick={() => setShowFilters(false)}
@@ -295,17 +269,17 @@ export default function HomePage() {
               </button>
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
-              {universities.map((university) => (
+              {hallsOfResidence.map((hall) => (
                 <button
-                  key={university.id}
-                  onClick={() => setSelectedUniversity(university.id)}
+                  key={hall.id}
+                  onClick={() => setSelectedHall(hall.id)}
                   className={`px-3 py-2 rounded-lg text-sm transition ${
-                    selectedUniversity === university.id
+                    selectedHall === hall.id
                       ? "bg-blue-900 dark:bg-blue-600 text-white"
                       : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
                   }`}
                 >
-                  {university.name}
+                  {hall.name}
                 </button>
               ))}
             </div>
@@ -331,36 +305,57 @@ export default function HomePage() {
           <>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
               {listings.map((item) => (
-                <div
+                <Link
                   key={item.id}
-                  className="bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md dark:hover:shadow-xl dark:hover:shadow-blue-900/20 transition cursor-pointer border border-transparent dark:border-gray-700 dark:hover:border-blue-600"
+                  href={`/browse/${item.id}`}
+                  className="bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md dark:hover:shadow-xl dark:hover:shadow-blue-900/20 transition cursor-pointer border border-transparent dark:border-gray-700 dark:hover:border-blue-600 block"
                 >
-                  <div
-                    className={`aspect-square bg-gradient-to-br ${getGradientColor(
-                      item.category
-                    )} dark:opacity-90 rounded-t-xl relative`}
-                  >
+                  {/* Image or Gradient */}
+                  <div className="aspect-square rounded-t-xl relative overflow-hidden">
+                    {item.images && item.images.length > 0 ? (
+                      <>
+                        <img
+                          src={item.images[0]}
+                          alt={item.title}
+                          className="w-full h-full object-cover"
+                        />
+                        {/* Subtle overlay for better text visibility */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-black/10"></div>
+                      </>
+                    ) : (
+                      <div
+                        className={`w-full h-full bg-gradient-to-br ${getGradientColor(
+                          item.category
+                        )} dark:opacity-90`}
+                      ></div>
+                    )}
+
+                    {/* Price Badge */}
                     <div className="absolute top-2 right-2 bg-white dark:bg-gray-800 px-3 py-1 rounded-lg text-sm font-bold text-blue-900 dark:text-blue-400 shadow-sm">
                       ₦{parseFloat(item.price).toLocaleString()}
                     </div>
-                    <div className="absolute bottom-2 left-2 bg-blue-900 dark:bg-blue-600 text-white px-2 py-1 rounded text-xs font-medium">
+
+                    {/* Category Badge */}
+                    <div className="absolute bottom-2 left-2 bg-blue-900 dark:bg-blue-600 text-white px-2 py-1 rounded text-xs font-medium shadow-sm">
                       {categories.find((c) => c.id === item.category)?.name}
                     </div>
 
-                    {/* Top left badges - stacked vertically with gap */}
+                    {/* Top left badges */}
                     <div className="absolute top-2 left-2 flex flex-col gap-1">
-                      {item.university === userUniversity && (
-                        <div className="bg-green-500 text-white px-2 py-1 rounded text-xs font-medium">
-                          Your Campus
+                      {item.hall_of_residence === userHall && (
+                        <div className="bg-green-500 text-white px-2 py-1 rounded text-xs font-medium shadow-sm">
+                          Your Hall
                         </div>
                       )}
                       {item.is_featured && (
-                        <div className="bg-yellow-500 text-white px-2 py-1 rounded text-xs font-medium">
+                        <div className="bg-yellow-500 text-white px-2 py-1 rounded text-xs font-medium shadow-sm">
                           Featured
                         </div>
                       )}
                     </div>
                   </div>
+
+                  {/* Item Details */}
                   <div className="p-4">
                     <h3 className="font-semibold text-gray-900 dark:text-white mb-2 line-clamp-2">
                       {item.title}
@@ -369,8 +364,8 @@ export default function HomePage() {
                       <div className="flex items-center gap-2">
                         <div className="flex items-center gap-1 text-gray-600 dark:text-gray-400">
                           <MapPin className="w-4 h-4" />
-                          <span className="font-medium">
-                            {item.university_short}
+                          <span className="font-medium text-xs">
+                            {item.hall_of_residence}
                           </span>
                         </div>
                         <span
@@ -388,19 +383,13 @@ export default function HomePage() {
                               item.condition.slice(1)}
                         </span>
                       </div>
-                      <div className="flex items-center gap-1">
-                        <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                        <span className="font-medium text-gray-900 dark:text-white">
-                          {item.seller_rating}
-                        </span>
-                      </div>
                     </div>
                     <div className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
                       <Clock className="w-3 h-3" />
                       <span>{getTimeAgo(item.created_at)}</span>
                     </div>
                   </div>
-                </div>
+                </Link>
               ))}
             </div>
 

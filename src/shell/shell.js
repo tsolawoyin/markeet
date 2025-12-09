@@ -72,7 +72,7 @@ export default function Shell({ children, supabase_user }) {
     >
       <div className="w-full h-screen">
         {user && <Header />}
-        <div className="">{children}</div>
+        <div className="pb-10">{children}</div>
         {user && <Footer />}
       </div>
     </ShellContext.Provider>

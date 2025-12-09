@@ -8,9 +8,12 @@ import { ShoppingBag, Bell, LogOut, Home, Search, Users, MessageCircle } from "l
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
+// Nice and easy project...
+// Makes sense. 
+// Let me use the remaining time on layout
 const navigationLinks = [
     {
-        url: "/",
+        url: "/browse",
         name: "Home",
         icon: Home,
     },
@@ -45,7 +48,7 @@ export default function Header() {
             <div className="container mx-auto px-4 md:px-6 lg:px-8">
                 <div className="flex h-14 md:h-16 items-center justify-between">
                     {/* Logo */}
-                    <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+                    <Link href="/browse" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
                         <div className="w-8 h-8 md:w-10 md:h-10 bg-blue-900 dark:bg-blue-600 rounded-lg flex items-center justify-center">
                             <ShoppingBag className="w-5 h-5 md:w-6 md:h-6 text-white" />
                         </div>

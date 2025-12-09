@@ -34,9 +34,22 @@ export default function LoginForm() {
     password: "",
   });
 
+  // Email validation for UI students
+  const isValidUIEmail = (email) => {
+    return email.toLowerCase().endsWith("@stu.ui.edu.ng");
+  };
+
   const handleSubmit = async () => {
     setError(null);
-    console.log(formData);
+
+    // Validate UI email
+    if (!isValidUIEmail(formData.email)) {
+      setError(
+        "Please use your University of Ibadan student email (@stu.ui.edu.ng)"
+      );
+      return;
+    }
+
     try {
       const { data, error: signInError } =
         await supabase.auth.signInWithPassword({
@@ -50,7 +63,7 @@ export default function LoginForm() {
       setUser(data.user);
 
       // Redirect to home
-      router.push("/");
+      router.push("/browse");
     } catch (error) {
       console.error("Login error:", error);
       setError(error.message);
@@ -59,12 +72,7 @@ export default function LoginForm() {
 
   return (
     <div className="min-h-screen bg-linear-to-br from-blue-50 to-blue-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center p-4 md:p-6 lg:p-8">
-      <form
-        action={async function () {
-          startTransition(handleSubmit);
-        }}
-        className="w-full max-w-md lg:max-w-lg xl:max-w-xl"
-      >
+      <div className="w-full max-w-md lg:max-w-lg xl:max-w-xl">
         <Card className="dark:bg-gray-800 dark:border-gray-700">
           <CardHeader className="text-center">
             <div className="flex items-center justify-center gap-2 md:gap-3">
@@ -76,7 +84,7 @@ export default function LoginForm() {
               </span>
             </div>
             <CardDescription className="text-sm md:text-base dark:text-gray-400">
-              Login to your campus marketplace
+              University of Ibadan Campus Marketplace
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -87,12 +95,12 @@ export default function LoginForm() {
                   htmlFor="email"
                   className="dark:text-gray-200 text-sm md:text-base"
                 >
-                  Student Email
+                  UI Student Email
                 </FieldLabel>
                 <Input
                   id="email"
                   type="email"
-                  placeholder="student@ui.edu.ng"
+                  placeholder="student@stu.ui.edu.ng"
                   value={formData.email}
                   onChange={(e) =>
                     setFormData({
@@ -104,7 +112,7 @@ export default function LoginForm() {
                   required
                 />
                 <FieldDescription className="dark:text-gray-400 text-xs md:text-sm">
-                  Use your .edu.ng email address
+                  Use your @stu.ui.edu.ng email address
                 </FieldDescription>
               </Field>
 
@@ -164,8 +172,9 @@ export default function LoginForm() {
               {/* Login Button */}
               <Field>
                 <Button
-                  type="submit"
+                  type="button"
                   disabled={isPending}
+                  onClick={() => startTransition(handleSubmit)}
                   className="w-full bg-blue-900 hover:bg-blue-800 dark:bg-blue-600 dark:hover:bg-blue-700 dark:text-white text-sm md:text-base py-2 md:py-3"
                 >
                   {isPending ? (
@@ -190,7 +199,7 @@ export default function LoginForm() {
             </FieldGroup>
           </CardContent>
         </Card>
-      </form>
+      </div>
     </div>
   );
 }
