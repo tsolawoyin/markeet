@@ -70,7 +70,7 @@ export default function SignupForm() {
     { value: "tedder", label: "Tedder Hall" },
     { value: "kuti", label: "Kuti Hall" },
     { value: "sultan-bello", label: "Sultan Bello Hall" },
-    { value: "independence", label: "Independence Hall" },
+    { value: "independence", label: "Great Independence Hall" },
     { value: "nnamdi-azikiwe", label: "Nnamdi Azikiwe Hall" },
     // Off Campus
     { value: "off-campus", label: "Off Campus" },
@@ -197,8 +197,9 @@ export default function SignupForm() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center p-4 md:p-6 lg:p-8">
+    <div className="min-h-screen bg-linear-to-br from-blue-50 to-blue-100 dark:from-gray-900 dark:to-gray-800 flex items-center justify-center p-4 md:p-6 lg:p-8">
       <Card className="w-full max-w-md lg:max-w-lg xl:max-w-xl dark:bg-gray-800 dark:border-gray-700">
+        {/* Static */}
         <CardHeader className="text-center">
           <div className="flex items-center justify-center gap-2 md:gap-3">
             <div className="w-12 h-12 md:w-14 md:h-14 bg-blue-900 dark:bg-blue-600 rounded-lg flex items-center justify-center">
@@ -216,6 +217,7 @@ export default function SignupForm() {
           </CardDescription>
         </CardHeader>
         <CardContent>
+          {/* This is the part that need  */}
           <FieldGroup>
             {/* Full Name */}
             <Field>

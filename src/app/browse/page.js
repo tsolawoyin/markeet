@@ -64,6 +64,7 @@ export default function HomePage() {
   const [totalCount, setTotalCount] = useState(0);
   const [page, setPage] = useState(0);
 
+  // exactly. 
   const userHall = user?.user_metadata?.hall_of_residence || "";
   const observerTarget = useRef(null);
 

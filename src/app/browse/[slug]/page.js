@@ -20,7 +20,7 @@ import {
   Clock,
   Tag,
   AlertTriangle,
-  Loader2,
+  Loader,
   Phone,
   Mail,
   Eye,
@@ -134,7 +134,7 @@ export default function ListingDetailClient({ listingId }) {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+        <Loader className="w-8 h-8 animate-spin text-blue-600" />
       </div>
     );
   }
@@ -220,7 +220,7 @@ export default function ListingDetailClient({ listingId }) {
                 </>
               ) : (
                 <div
-                  className={`w-full h-full bg-gradient-to-br ${
+                  className={`w-full h-full bg-linear-to-br ${
                     gradientColors[gradientIndex]
                   } dark:opacity-90 flex items-center justify-center`}
                 >
@@ -347,7 +347,7 @@ export default function ListingDetailClient({ listingId }) {
                 Seller Information
               </h3>
               <div className="flex items-center gap-4 mb-4">
-                <div className="w-14 h-14 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center flex-shrink-0">
+                <div className="w-14 h-14 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center shrink-0">
                   <User className="w-7 h-7 text-blue-900 dark:text-blue-300" />
                 </div>
                 <div className="flex-1 min-w-0">
@@ -355,7 +355,7 @@ export default function ListingDetailClient({ listingId }) {
                     <div className="font-semibold text-gray-900 dark:text-white truncate">
                       {listing.seller_name}
                     </div>
-                    <Shield className="w-4 h-4 text-green-600 flex-shrink-0" />
+                    <Shield className="w-4 h-4 text-green-600 shrink-0" />
                   </div>
                   <div className="text-sm text-gray-600 dark:text-gray-400">
                     {listing.hall_of_residence}
@@ -405,7 +405,7 @@ export default function ListingDetailClient({ listingId }) {
             {/* Safety Notice */}
             <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
               <div className="flex items-start gap-3">
-                <Shield className="w-5 h-5 text-blue-900 dark:text-blue-400 flex-shrink-0 mt-0.5" />
+                <Shield className="w-5 h-5 text-blue-900 dark:text-blue-400 shrink-0 mt-0.5" />
                 <div className="text-sm">
                   <div className="font-semibold text-blue-900 dark:text-blue-300 mb-1">
                     Safe Campus Meetup
@@ -449,7 +449,7 @@ export default function ListingDetailClient({ listingId }) {
                       />
                     ) : (
                       <div
-                        className={`w-full h-full bg-gradient-to-br ${
+                        className={`w-full h-full bg-linear-to-br ${
                           gradientColors[gradientIndex]
                         } dark:opacity-90`}
                       ></div>
