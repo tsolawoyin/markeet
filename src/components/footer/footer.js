@@ -31,11 +31,11 @@ const navigationItems = [
 //     icon: MessageCircle,
 //     badge: true,
 //   },
-//   {
-//     url: "/profile",
-//     name: "Profile",
-//     icon: User,
-//   },
+  {
+    url: "/profile/me",
+    name: "Profile",
+    icon: User,
+  },
 ];
 
 export default function Footer() {

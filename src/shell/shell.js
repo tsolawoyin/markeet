@@ -71,7 +71,7 @@ export default function Shell({ children, supabase_user }) {
       value={{ user, setUser, supabase, currentPath, dexie }}
     >
       <div className="w-full h-screen">
-        {user && <Header />}
+        {/* {user && <Header />} */}
         <div className="pb-10">{children}</div>
         {user && <Footer />}
       </div>

@@ -353,7 +353,7 @@ export default function ListingDetailClient({ listingId }) {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
                     <div className="font-semibold text-gray-900 dark:text-white truncate">
-                      {listing.seller_name}
+                      <Link href={`/profile/${listing.seller_id}`}>{listing.seller_name}</Link>
                     </div>
                     <Shield className="w-4 h-4 text-green-600 shrink-0" />
                   </div>

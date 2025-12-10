@@ -11,7 +11,7 @@ import {
   Laptop,
   Home,
   Package,
-  Loader2,
+  Loader,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,6 +19,8 @@ import { Input } from "@/components/ui/input";
 import { useContext } from "react";
 import { ShellContext } from "@/shell/shell";
 import Link from "next/link";
+
+import Header from "@/components/header/header";
 
 const categories = [
   { id: "all", name: "All Items", icon: Package },
@@ -64,7 +66,7 @@ export default function HomePage() {
   const [totalCount, setTotalCount] = useState(0);
   const [page, setPage] = useState(0);
 
-  // exactly. 
+  // exactly.
   const userHall = user?.user_metadata?.hall_of_residence || "";
   const observerTarget = useRef(null);
 
@@ -188,9 +190,9 @@ export default function HomePage() {
     return gradientColors[index % gradientColors.length];
   };
 
-
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pb-10">
+      <Header currentPage={"browse"} />
       <div className="max-w-7xl mx-auto px-4 py-6">
         {/* Search Bar */}
         <div className="mb-6">
@@ -290,7 +292,7 @@ export default function HomePage() {
         {/* Listings Grid */}
         {loading ? (
           <div className="flex items-center justify-center py-12">
-            <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+            <Loader className="w-8 h-8 animate-spin text-blue-600" />
           </div>
         ) : listings.length === 0 ? (
           <div className="text-center py-12">
@@ -396,7 +398,7 @@ export default function HomePage() {
 
             {loadingMore && (
               <div className="flex items-center justify-center py-8">
-                <Loader2 className="w-6 h-6 animate-spin text-blue-600" />
+                <Loader className="w-6 h-6 animate-spin text-blue-600" />
                 <span className="ml-2 text-gray-600 dark:text-gray-400">
                   Loading more...
                 </span>
