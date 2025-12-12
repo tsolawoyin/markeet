@@ -89,7 +89,7 @@ export default function MarketHomePage() {
               </span>
             </div>
 
-            <div className="hidden md:flex items-center gap-6">
+            {/* <div className="hidden md:flex items-center gap-6">
               <a href="#problem" className="text-gray-700 dark:text-gray-300 hover:text-blue-900 dark:hover:text-blue-400 transition">
                 The Problem
               </a>
@@ -108,9 +108,9 @@ export default function MarketHomePage() {
               >
                 Sign Up Free
               </a>
-            </div>
+            </div> */}
 
-            <button
+            {/* <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               className="md:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition"
             >
@@ -119,7 +119,7 @@ export default function MarketHomePage() {
               ) : (
                 <Menu className="w-6 h-6 text-gray-700 dark:text-gray-300" />
               )}
-            </button>
+            </button> */}
           </div>
 
           {isMenuOpen && (
@@ -152,13 +152,6 @@ export default function MarketHomePage() {
       {/* Hero Section - The Story */}
       <section className="pt-32 pb-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto text-center">
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-100 dark:bg-blue-900/30 rounded-full mb-6">
-            <Sparkles className="w-4 h-4 text-blue-900 dark:text-blue-400" />
-            <span className="text-sm font-medium text-blue-900 dark:text-blue-400">
-              A Message From a Fellow UIte
-            </span>
-          </div>
-
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white mb-6 leading-tight">
             Fellow UItes,
             <span className="block mt-2 bg-gradient-to-r from-blue-900 to-blue-600 dark:from-blue-400 dark:to-blue-300 bg-clip-text text-transparent">
