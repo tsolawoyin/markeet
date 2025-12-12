@@ -28,10 +28,10 @@ const ubuntu = Ubuntu({
 const Dynamic = async ({ children }: any) => {
   const supabase = await createClient();
   const { data, error } = await supabase.auth.getUser();
-
-  if (error) {
-    return <p>We have problems verifying you. Please refresh.</p>
-  }
+  // if (error) {
+  //   console.log(error);
+  //   return <p>We have problems verifying you. Please refresh.</p>
+  // }
   // I don tire for all these rules and regulations.
   return (
     <Shell supabase_user={data}>
