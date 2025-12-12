@@ -50,8 +50,8 @@ export default function ListingFormClient({
     const { supabase, user } = useContext(ShellContext);
     const isEditing = !!listingId;
 
-    const [userProfile, setUserProfile] = useState(null);
-    const [existingListing, setExistingListing] = useState(null);
+    const [userProfile, setUserProfile] = useState<any>(null);
+    const [existingListing, setExistingListing] = useState<any>(null);
     const [loading, setLoading] = useState(isEditing);
 
     const [formData, setFormData] = useState({
@@ -63,9 +63,9 @@ export default function ListingFormClient({
         status: "active",
     });
 
-    const [images, setImages] = useState([]);
-    const [imagePreviews, setImagePreviews] = useState([]);
-    const [existingImages, setExistingImages] = useState([]);
+    const [images, setImages] = useState<any[]>([]);
+    const [imagePreviews, setImagePreviews] = useState<any[]>([]);
+    const [existingImages, setExistingImages] = useState<any[]>([]);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [uploadProgress, setUploadProgress] = useState(0);
     const [showSuccessDialog, setShowSuccessDialog] = useState(false);
@@ -129,7 +129,7 @@ export default function ListingFormClient({
         }
     };
 
-    const handleImageUpload = (e) => {
+    const handleImageUpload = (e: any) => {
         const files = Array.from(e.target.files);
 
         // Calculate total images (existing + new)
@@ -146,7 +146,7 @@ export default function ListingFormClient({
         }
 
         // Validate file sizes (5MB each)
-        const oversizedFiles = filesToAdd.filter((file) => file.size > 5242880);
+        const oversizedFiles = filesToAdd.filter((file: any) => file.size > 5242880);
         if (oversizedFiles.length > 0) {
             setErrorMessage("Each image must be less than 5MB");
             setShowErrorDialog(true);
@@ -157,7 +157,7 @@ export default function ListingFormClient({
         setImages((prev) => [...prev, ...filesToAdd]);
 
         // Create previews
-        filesToAdd.forEach((file) => {
+        filesToAdd.forEach((file: any) => {
             const reader = new FileReader();
             reader.onloadend = () => {
                 setImagePreviews((prev) => [...prev, reader.result]);
@@ -166,7 +166,7 @@ export default function ListingFormClient({
         });
     };
 
-    const removeImage = (index) => {
+    const removeImage = (index: any) => {
         // Check if it's an existing image or new upload
         if (index < existingImages.length) {
             // Remove from existing images
@@ -180,7 +180,7 @@ export default function ListingFormClient({
         }
     };
 
-    const uploadImages = async (listingIdForUpload) => {
+    const uploadImages = async (listingIdForUpload: any) => {
         const uploadedUrls = [];
 
         for (let i = 0; i < images.length; i++) {
@@ -210,7 +210,7 @@ export default function ListingFormClient({
         return uploadedUrls;
     };
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = async (e: any) => {
         e.preventDefault();
 
         // Check if profile is loaded
@@ -318,6 +318,7 @@ export default function ListingFormClient({
                     price: "",
                     category: "",
                     condition: "",
+                    status: "active",
                 });
                 setImages([]);
                 setImagePreviews([]);
@@ -327,7 +328,7 @@ export default function ListingFormClient({
 
             // Scroll to top
             window.scrollTo({ top: 0, behavior: "smooth" });
-        } catch (error) {
+        } catch (error: any) {
             console.error("Error saving listing:", error);
             setErrorMessage(
                 error.message || "Something went wrong. Please try again"

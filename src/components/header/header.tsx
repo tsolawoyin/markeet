@@ -36,7 +36,13 @@ const navigationLinks = [
 
 import ProfileMenu from "./header-menu";
 
-export default function Header({ currentPage, isOwnProfile, isEditing }) {
+interface HeaderProps {
+    currentPage: "profile" | "browse" | "create" | string;
+    isOwnProfile: boolean;
+    isEditing: boolean;
+}
+
+export default function Header({ currentPage, isOwnProfile, isEditing }: HeaderProps) {
     const router = useRouter();
     // it will now require serious logic
 
