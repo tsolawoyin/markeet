@@ -9,6 +9,7 @@ import { Suspense } from "react";
 import Shell from "@/shell/shell";
 import { ThemeProvider } from "@/components/theme-store";
 import PWAInstall from "@/components/pwa-install";
+import ServiceWorkerCleanup from "@/components/sw-cleanup";
 
 export const metadata: Metadata = {
   title: "Markeet",
@@ -76,6 +77,7 @@ export default async function RootLayout({
             <Dynamic>{children}</Dynamic>
           </Suspense>
           <PWAInstall />
+          <ServiceWorkerCleanup />
         </ThemeProvider>
       </body>
     </html>

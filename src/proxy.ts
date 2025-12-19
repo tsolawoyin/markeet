@@ -7,6 +7,11 @@ export default async function proxy(request: NextRequest) {
     request,
   });
 
+  // Add cache control headers to prevent SW caching issues on iOS
+  response.headers.set("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate");
+  response.headers.set("Pragma", "no-cache");
+  response.headers.set("Expires", "0");
+
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
@@ -22,6 +27,11 @@ export default async function proxy(request: NextRequest) {
           response = NextResponse.next({
             request,
           });
+          // Re-apply cache control headers
+          response.headers.set("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate");
+          response.headers.set("Pragma", "no-cache");
+          response.headers.set("Expires", "0");
+          
           cookiesToSet.forEach(({ name, value, options }) =>
             response.cookies.set(name, value, options)
           );
