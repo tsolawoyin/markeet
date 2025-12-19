@@ -53,9 +53,6 @@ export default async function proxy(request: NextRequest) {
 
   // PWA-related files and public paths that don't require authentication
   const publicPaths = [
-    "/",
-    "/login",
-    "/sign-up",
     "/sw.js",
     "/manifest.json",
     "/manifest.webmanifest",
@@ -63,6 +60,9 @@ export default async function proxy(request: NextRequest) {
     "/robots.txt",
     "/sitemap.xml",
   ];
+
+  // Auth-related paths that logged-in users should be redirected from
+  const authPaths = ["/", "/login", "/sign-up"];
 
   // Check if current path is in public paths
   const isPublicPath = publicPaths.some(
@@ -75,13 +75,28 @@ export default async function proxy(request: NextRequest) {
       request.nextUrl.pathname
     );
 
-  // Allow access without authentication
+  // Check if path is blog or blog subroute
+  const isBlogPath = request.nextUrl.pathname.startsWith("/blog");
+
+  // Allow access to public paths and PWA assets
   if (isPublicPath || isPWAAsset) {
     return response;
   }
 
-  // Redirect to root if not authenticated
-  if (!user) {
+  // Allow access to blog for everyone
+  if (isBlogPath) {
+    return response;
+  }
+
+  // Redirect logged-in users from auth pages to /browse
+  if (user && authPaths.includes(request.nextUrl.pathname)) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/browse";
+    return NextResponse.redirect(url);
+  }
+
+  // Redirect to root if not authenticated and trying to access protected routes
+  if (!user && !authPaths.includes(request.nextUrl.pathname)) {
     const url = request.nextUrl.clone();
     url.pathname = "/";
     return NextResponse.redirect(url);

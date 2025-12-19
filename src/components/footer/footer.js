@@ -1,6 +1,6 @@
 "use client";
 
-import { Search, MessageCircle, User, Plus, Home, Users } from "lucide-react";
+import { Search, MessageCircle, User, Plus, Home, Users, Rss } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -20,11 +20,11 @@ const navigationItems = [
     name: "Post",
     icon: Plus,
   },
-//   {
-//     url: "/campus",
-//     name: "Campus",
-//     icon: Users,
-//   },
+  {
+    url: "/blog",
+    name: "Blog",
+    icon: Rss,
+  },
 //   {
 //     url: "/messages",
 //     name: "Messages",
