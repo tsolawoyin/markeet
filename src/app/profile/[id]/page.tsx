@@ -54,7 +54,7 @@ export default async function ProfilePage({
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pb-15">
       {/* Static Navigation */}
       <Header currentPage={"profile"} isOwnProfile={isOwnProfile} isEditing={false} />
       <div className="max-w-7xl mx-auto px-4 py-6 space-y-6">

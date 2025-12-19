@@ -72,8 +72,8 @@ export default function Shell({ children, supabase_user }) {
     >
       <div className="w-full h-screen">
         {/* {user && <Header />} */}
-        <div className="flex flex-col items-center justify-between w-full h-[calc(100vh-64px)]">{children}</div>
-        {user && <Footer />}
+        <div className="">{children}</div>
+        {user && currentPath != "/onboarding" && <Footer />}
       </div>
     </ShellContext.Provider>
   );

@@ -8,11 +8,21 @@ import { Suspense } from "react";
 // Context
 import Shell from "@/shell/shell";
 import { ThemeProvider } from "@/components/theme-store";
+import PWAInstall from "@/components/pwa-install";
 
 export const metadata: Metadata = {
   title: "Markeet",
   description:
     "A trusted, campus-focused marketplace where verified students can easily list, discover, and transact items",
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "Markeet",
+  },
+  formatDetection: {
+    telephone: false,
+  },
 };
 
 // const open_sans = Open_Sans({
@@ -47,17 +57,25 @@ export default async function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+        <meta name="theme-color" content="#3b82f6" />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta name="apple-mobile-web-app-title" content="Markeet" />
+      </head>
       <body className={`${ubuntu.className} antialiased`}>
         <ThemeProvider
           attribute="class"
-          defaultTheme="system"
+          defaultTheme="light"
           enableSystem
           disableTransitionOnChange
         >
           <Suspense fallback={<p>Verifying your auth status, please wait...</p>}>
             <Dynamic>{children}</Dynamic>
           </Suspense>
-
+          <PWAInstall />
         </ThemeProvider>
       </body>
     </html>

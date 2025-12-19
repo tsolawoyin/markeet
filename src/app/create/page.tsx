@@ -31,7 +31,7 @@ export default async function ListingFormPage({
   const isEditing = !!listingId;
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pb-20">
       <Suspense fallback={<ListingFormSkeleton isEditing={isEditing} />}>
         <ListingFormClient userId={user.id} listingId={listingId} />
       </Suspense>
