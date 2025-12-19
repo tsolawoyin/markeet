@@ -18,19 +18,35 @@ import {
 import { Button } from "@/components/ui/button";
 
 import Image from "next/image";
+import Link from "next/link";
 
 export default function OnboardingPage() {
   const { user } = useContext(ShellContext);
   const [notificationStatus, setNotificationStatus] = useState("default");
+  const [isIOS, setIsIOS] = useState(false);
 
   useEffect(() => {
+    // Detect iOS
+    const isAppleDevice = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    setIsIOS(isAppleDevice);
+
     // Check current notification permission status on mount
-    if ("Notification" in window) {
+    if ("Notification" in window && !isAppleDevice) {
       setNotificationStatus(Notification.permission);
     }
   }, []);
 
   const handleNotificationClick = async () => {
+    // iOS doesn't support Notifications API
+    if (isIOS) {
+      alert(
+        "iOS doesn't support web push notifications in Safari yet. " +
+        "If you installed Markeet as an app, notifications will work when we add that feature. " +
+        "For now, make sure to turn on app notifications in your device settings."
+      );
+      return;
+    }
+
     if ("Notification" in window) {
       try {
         const permission = await Notification.requestPermission();
@@ -51,6 +67,7 @@ export default function OnboardingPage() {
 
   console.log("OnboardingPage user:", user);
   console.log("Notification status:", notificationStatus);
+  console.log("Is iOS:", isIOS);
 
   return (
     <div className="min-h-screen bg-background text-foreground dark:bg-slate-950 dark:text-slate-50 py-8 px-4">
@@ -97,7 +114,30 @@ export default function OnboardingPage() {
               </div>
 
               <div className="ml-8">
-                {notificationStatus === "granted" ? (
+                {isIOS ? (
+                  <div className="space-y-3">
+                    <div className="flex items-start gap-2 px-4 py-3 bg-amber-50 dark:bg-amber-950/30 rounded-lg border border-amber-200 dark:border-amber-800/50">
+                      <AlertCircle className="h-5 w-5 text-amber-600 dark:text-amber-500 flex-shrink-0 mt-0.5" />
+                      <div className="text-sm text-amber-700 dark:text-amber-400">
+                        <p className="font-semibold mb-2">iOS Users</p>
+                        <p className="mb-2">
+                          Safari doesn't support web push notifications yet. However, if you install Markeet as an app, you can enable notifications in your device settings.
+                        </p>
+                        <p className="text-xs opacity-90">
+                          Steps: Settings → Installed Apps → Markeet → Notifications → Allow
+                        </p>
+                      </div>
+                    </div>
+                    <Button
+                      onClick={handleNotificationClick}
+                      className="bg-blue-600 hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-600 text-white text-sm"
+                      size="sm"
+                      variant="outline"
+                    >
+                      Got it
+                    </Button>
+                  </div>
+                ) : notificationStatus === "granted" ? (
                   <div className="flex items-center gap-2 text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-950/30 px-4 py-3 rounded-lg border border-green-200 dark:border-green-800/50 w-fit">
                     <CheckCircle className="h-5 w-5 flex-shrink-0" />
                     <span className="font-medium">Notifications enabled ✓</span>
@@ -128,13 +168,13 @@ export default function OnboardingPage() {
             <p className="text-sm text-muted-foreground mb-4">
               You can adjust these settings anytime in your account preferences.
             </p>
-            <a
+            <Link
               href="/browse"
               className="inline-flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium transition-colors"
             >
               Continue to Marketplace
               <ArrowRight className="h-4 w-4" />
-            </a>
+            </Link>
           </div>
         </div>
       </div>
