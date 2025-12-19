@@ -176,7 +176,7 @@ export default async function ({ params }) {
     <div className="max-w-[750px] mx-auto">
       <Header currentPage={"blog"} isOwnProfile={true} isEditing={false} />
       {content && (
-        <article className={`${ubuntu.className} px-5 pt-3 pb-10 dark:bg-slate-800`}>
+        <article className={`${ubuntu.className} px-5 pt-3 pb-15 dark:bg-slate-800`}>
           <div className="mb-8 pb-8 border-b border-slate-200 dark:border-slate-700">
             <h1 className="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white mb-3">
               {content.title}
