@@ -8,7 +8,10 @@ export default async function proxy(request: NextRequest) {
   });
 
   // Add cache control headers to prevent SW caching issues on iOS
-  response.headers.set("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate");
+  response.headers.set(
+    "Cache-Control",
+    "no-store, no-cache, must-revalidate, proxy-revalidate"
+  );
   response.headers.set("Pragma", "no-cache");
   response.headers.set("Expires", "0");
 
@@ -28,10 +31,13 @@ export default async function proxy(request: NextRequest) {
             request,
           });
           // Re-apply cache control headers
-          response.headers.set("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate");
+          response.headers.set(
+            "Cache-Control",
+            "no-store, no-cache, must-revalidate, proxy-revalidate"
+          );
           response.headers.set("Pragma", "no-cache");
           response.headers.set("Expires", "0");
-          
+
           cookiesToSet.forEach(({ name, value, options }) =>
             response.cookies.set(name, value, options)
           );
@@ -45,8 +51,32 @@ export default async function proxy(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  // Allow access to public paths without authentication
-  if (request.nextUrl.pathname === "/" || request.nextUrl.pathname === "/login" || request.nextUrl.pathname === "/sign-up" || request.nextUrl.pathname === "/sw.js") {
+  // PWA-related files and public paths that don't require authentication
+  const publicPaths = [
+    "/",
+    "/login",
+    "/sign-up",
+    "/sw.js",
+    "/manifest.json",
+    "/manifest.webmanifest",
+    "/site.webmanifest",
+    "/robots.txt",
+    "/sitemap.xml",
+  ];
+
+  // Check if current path is in public paths
+  const isPublicPath = publicPaths.some(
+    (path) => request.nextUrl.pathname === path
+  );
+
+  // Check if path is for PWA icons or assets
+  const isPWAAsset =
+    /^\/(icon-|apple-touch-icon|android-chrome-|favicon)/i.test(
+      request.nextUrl.pathname
+    );
+
+  // Allow access without authentication
+  if (isPublicPath || isPWAAsset) {
     return response;
   }
 
@@ -69,6 +99,6 @@ export const config = {
      * - favicon.ico (favicon file)
      * - Files with extensions (images, etc)
      */
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|json)$).*)",
   ],
 };

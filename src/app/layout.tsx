@@ -76,12 +76,36 @@ export default async function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-        <meta name="theme-color" content="#3b82f6" />
+        <meta charSet="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=5, user-scalable=yes" />
+        <meta name="theme-color" content="#2563eb" />
+        <meta name="color-scheme" content="light dark" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <meta name="apple-mobile-web-app-title" content="Markeet" />
+        <meta name="application-name" content="Markeet" />
+        
+        {/* PWA Manifest */}
+        <link rel="manifest" href="/manifest.json" />
+        
+        {/* Icons for different browsers */}
+        <link rel="icon" type="image/png" sizes="32x32" href="/icons/32.png" />
+        <link rel="icon" type="image/png" sizes="192x192" href="/icons/192.png" />
+        <link rel="icon" type="image/png" sizes="512x512" href="/icons/512.png" />
+        
+        {/* Apple Web App Icons */}
+        <link rel="apple-touch-icon" href="/icons/180.png" />
+        <link rel="apple-touch-icon" sizes="152x152" href="/icons/152.png" />
+        <link rel="apple-touch-icon" sizes="167x167" href="/icons/167.png" />
+        
+        {/* Start URL */}
+        <meta name="start_url" content="/" />
+        
+        {/* Disable cache for PWA */}
+        <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+        <meta http-equiv="Pragma" content="no-cache" />
+        <meta http-equiv="Expires" content="0" />
       </head>
       <body className={`${ubuntu.className} antialiased`}>
         <ThemeProvider
