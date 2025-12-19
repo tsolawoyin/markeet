@@ -64,25 +64,53 @@ export async function generateMetadata({ params }) {
 
 const render = {
   h1: ({ children }) => {
-    return <h1 className="my-8 pb-6 text-4xl font-bold text-slate-900 dark:text-white">{children}</h1>;
+    return (
+      <h1 className="my-8 pb-6 text-4xl font-bold text-slate-900 dark:text-white">
+        {children}
+      </h1>
+    );
   },
   h2: ({ children }) => {
-    return <h2 className="my-7 pb-5 text-3xl font-bold text-slate-900 dark:text-white border-b border-slate-200 dark:border-slate-700">{children}</h2>;
+    return (
+      <h2 className="my-7 pb-5 text-3xl font-bold text-slate-900 dark:text-white border-b border-slate-200 dark:border-slate-700">
+        {children}
+      </h2>
+    );
   },
   h3: ({ children }) => {
-    return <h3 className="my-6 text-2xl font-bold text-slate-900 dark:text-white">{children}</h3>;
+    return (
+      <h3 className="my-6 text-2xl font-bold text-slate-900 dark:text-white">
+        {children}
+      </h3>
+    );
   },
   h4: ({ children }) => {
-    return <h4 className="my-6 text-xl font-bold text-slate-900 dark:text-white">{children}</h4>;
+    return (
+      <h4 className="my-6 text-xl font-bold text-slate-900 dark:text-white">
+        {children}
+      </h4>
+    );
   },
   h5: ({ children }) => {
-    return <h5 className="my-5 pb-3 text-lg font-semibold text-slate-900 dark:text-white">{children}</h5>;
+    return (
+      <h5 className="my-5 pb-3 text-lg font-semibold text-slate-900 dark:text-white">
+        {children}
+      </h5>
+    );
   },
   h6: ({ children }) => {
-    return <h6 className="my-4 text-base font-semibold text-slate-900 dark:text-white">{children}</h6>;
+    return (
+      <h6 className="my-4 text-base font-semibold text-slate-900 dark:text-white">
+        {children}
+      </h6>
+    );
   },
   p: ({ children }) => {
-    return <p className="my-4 leading-7 text-slate-700 dark:text-slate-300">{children}</p>;
+    return (
+      <p className="my-4 leading-7 text-slate-700 dark:text-slate-300">
+        {children}
+      </p>
+    );
   },
   // a: ({ children, href }) => {
   //   return (
@@ -92,13 +120,25 @@ const render = {
   //   );
   // },
   ul: ({ children }) => {
-    return <ul className="my-4 ml-6 list-disc space-y-2 text-slate-700 dark:text-slate-300">{children}</ul>;
+    return (
+      <ul className="my-4 ml-6 list-disc space-y-2 text-slate-700 dark:text-slate-300">
+        {children}
+      </ul>
+    );
   },
   ol: ({ children }) => {
-    return <ol className="my-4 ml-6 list-decimal space-y-2 text-slate-700 dark:text-slate-300">{children}</ol>;
+    return (
+      <ol className="my-4 ml-6 list-decimal space-y-2 text-slate-700 dark:text-slate-300">
+        {children}
+      </ol>
+    );
   },
   li: ({ children }) => {
-    return <li className="leading-7 text-slate-700 dark:text-slate-300">{children}</li>;
+    return (
+      <li className="leading-7 text-slate-700 dark:text-slate-300">
+        {children}
+      </li>
+    );
   },
   blockquote: ({ children }) => {
     return (
@@ -123,17 +163,27 @@ const render = {
   },
   img: ({ src, alt }) => {
     return (
-      <img src={src} alt={alt} className="my-6 rounded-lg max-w-full h-auto border border-slate-200 dark:border-slate-700" />
+      <img
+        src={src}
+        alt={alt}
+        className="my-6 rounded-lg max-w-full h-auto border border-slate-200 dark:border-slate-700"
+      />
     );
   },
   hr: () => {
     return <hr className="my-8 border-slate-200 dark:border-slate-700" />;
   },
   strong: ({ children }) => {
-    return <strong className="font-bold text-slate-900 dark:text-white">{children}</strong>;
+    return (
+      <strong className="font-bold text-slate-900 dark:text-white">
+        {children}
+      </strong>
+    );
   },
   em: ({ children }) => {
-    return <em className="italic text-slate-700 dark:text-slate-300">{children}</em>;
+    return (
+      <em className="italic text-slate-700 dark:text-slate-300">{children}</em>
+    );
   },
   table: ({ children }) => {
     return (
@@ -149,7 +199,9 @@ const render = {
   },
   tbody: ({ children }) => {
     return (
-      <tbody className="divide-y divide-slate-200 dark:divide-slate-700 bg-white dark:bg-slate-900">{children}</tbody>
+      <tbody className="divide-y divide-slate-200 dark:divide-slate-700 bg-white dark:bg-slate-900">
+        {children}
+      </tbody>
     );
   },
   tr: ({ children }) => {
@@ -163,7 +215,11 @@ const render = {
     );
   },
   td: ({ children }) => {
-    return <td className="px-6 py-4 text-sm text-slate-700 dark:text-slate-300">{children}</td>;
+    return (
+      <td className="px-6 py-4 text-sm text-slate-700 dark:text-slate-300">
+        {children}
+      </td>
+    );
   },
 };
 
@@ -176,7 +232,9 @@ export default async function ({ params }) {
     <div className="max-w-[750px] mx-auto">
       <Header currentPage={"blog"} isOwnProfile={true} isEditing={false} />
       {content && (
-        <article className={`${ubuntu.className} px-5 pt-3 pb-15 dark:bg-slate-800`}>
+        <article
+          className={`${ubuntu.className} px-5 pt-3 pb-15 dark:bg-slate-800`}
+        >
           <div className="mb-8 pb-8 border-b border-slate-200 dark:border-slate-700">
             <h1 className="text-4xl md:text-5xl font-bold text-slate-900 dark:text-white mb-3">
               {content.title}
@@ -186,7 +244,9 @@ export default async function ({ params }) {
             </p>
           </div>
 
-          <p className="text-lg text-slate-700 dark:text-slate-300 mb-8 font-medium leading-relaxed">{content.summary}</p>
+          <p className="text-lg text-slate-700 dark:text-slate-300 mb-8 font-medium leading-relaxed">
+            {content.summary}
+          </p>
 
           {/* The prose class automatically styles all HTML elements */}
           <div className="prose dark:prose-invert max-w-none">
