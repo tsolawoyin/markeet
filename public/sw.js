@@ -4,18 +4,23 @@ const urlsToCache = [
   "/browse",
   "/login",
   "/sign-up",
-  "/offline.html",
 ];
 
 self.addEventListener("install", (event) => {
+  self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(urlsToCache);
+      return cache.addAll(urlsToCache).catch((error) => {
+        console.warn("Failed to cache some URLs:", error);
+        // Don't fail the install if some URLs can't be cached
+        return Promise.resolve();
+      });
     })
   );
 });
 
 self.addEventListener("activate", (event) => {
+  self.clients.claim();
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(
@@ -30,7 +35,14 @@ self.addEventListener("activate", (event) => {
 });
 
 self.addEventListener("fetch", (event) => {
+  // Only handle GET requests
   if (event.request.method !== "GET") {
+    return;
+  }
+
+  // Skip caching for API requests and other special URLs
+  const url = new URL(event.request.url);
+  if (url.pathname.startsWith("/api/") || url.pathname.startsWith("/admin/")) {
     return;
   }
 
@@ -40,18 +52,32 @@ self.addEventListener("fetch", (event) => {
         return response;
       }
 
-      return fetch(event.request).then((response) => {
-        if (!response || response.status !== 200 || response.type === "error") {
+      return fetch(event.request)
+        .then((response) => {
+          // Don't cache non-successful responses
+          if (!response || response.status !== 200) {
+            return response;
+          }
+
+          // Don't cache if it's not a successful response
+          if (response.type === "error") {
+            return response;
+          }
+
+          // Clone the response and cache it
+          const responseToCache = response.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(event.request, responseToCache).catch((err) => {
+              console.warn("Failed to cache:", event.request.url, err);
+            });
+          });
+
           return response;
-        }
-
-        const responseToCache = response.clone();
-        caches.open(CACHE_NAME).then((cache) => {
-          cache.put(event.request, responseToCache);
+        })
+        .catch(() => {
+          // Return cached response if network fails
+          return caches.match(event.request);
         });
-
-        return response;
-      });
     })
   );
 });

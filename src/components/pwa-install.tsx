@@ -9,14 +9,23 @@ interface BeforeInstallPromptEvent extends Event {
 
 export default function PWAInstall() {
   useEffect(() => {
-    // Only register service worker in production
-    if (process.env.NODE_ENV === "production") {
+    // Check if device is iOS
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+
+    // Only register service worker in production and on non-iOS devices
+    // iOS (Safari) has limited SW support
+    if (process.env.NODE_ENV === "production" && !isIOS) {
       if (typeof window !== "undefined" && "serviceWorker" in navigator) {
-        navigator.serviceWorker.register("/sw.js").catch((error: unknown) => {
-          console.log("Service Worker registration failed:", error);
-        });
+        navigator.serviceWorker
+          .register("/sw.js", { scope: "/" })
+          .then((registration) => {
+            console.log("Service Worker registered successfully:", registration);
+          })
+          .catch((error: unknown) => {
+            console.warn("Service Worker registration failed:", error);
+          });
       }
-    } else {
+    } else if (!isIOS) {
       // Development: Unregister any existing service workers
       if (typeof window !== "undefined" && "serviceWorker" in navigator) {
         navigator.serviceWorker.getRegistrations().then((registrations) => {
@@ -26,6 +35,8 @@ export default function PWAInstall() {
           });
         });
       }
+    } else if (isIOS) {
+      console.log("iOS detected: Service Workers have limited support in Safari");
     }
 
     if (typeof window !== "undefined") {
