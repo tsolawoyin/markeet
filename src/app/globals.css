@@ -120,3 +120,19 @@
     @apply bg-background text-foreground;
   }
 }
+
+.homepage-hero-bg {
+  background-image: url('/babe.jpeg');
+  background-size: cover;
+  background-position: center;
+  position: relative;
+}
+
+.homepage-hero-bg::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0, 10, 10, 0.5);
+  z-index: 1;
+  pointer-events: none;
+}

@@ -82,7 +82,7 @@ export default function MarketHomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 md:h-20">
             <div className="flex items-center gap-2 md:gap-3">
-              <span className="text-2xl md:text-3xl font-bold text-blue-600 dark:text-blue-500">
+              <span className={`text-2xl md:text-3xl font-bold ${scrolled ? "text-blue-600" : "text-white"}`}>
                 Markeet
               </span>
             </div>
@@ -148,14 +148,14 @@ export default function MarketHomePage() {
       </nav>
 
       {/* Hero Section */}
-      <section className="pt-32 pb-24 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-4xl mx-auto text-center">
-          <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-slate-900 dark:text-white mb-6 leading-tight">
+      <section className="pt-32 pb-24 px-4 sm:px-6 lg:px-8 homepage-hero-bg">
+        <div className="max-w-4xl mx-auto text-center relative z-10">
+          <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-white dark:text-white mb-6 leading-tight">
             Buy & Sell on Campus
-            <span className="block text-blue-600 dark:text-blue-500">The Right Way</span>
+            <span className="block text-blue-700 dark:text-blue-500">The Right Way</span>
           </h1>
 
-          <p className="text-xl md:text-2xl text-slate-600 dark:text-slate-300 mb-8 max-w-3xl mx-auto leading-relaxed">
+          <p className="text-xl md:text-2xl text-white dark:text-slate-300 mb-8 max-w-3xl mx-auto leading-relaxed">
             A trusted marketplace for UI students. No scams. No middlemen. Just students helping students.
           </p>
 
@@ -169,23 +169,23 @@ export default function MarketHomePage() {
             </a>
             <a
               href="#features"
-              className="px-8 py-4 border-2 border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 rounded-lg hover:border-blue-600 hover:bg-blue-50 dark:hover:bg-slate-900 transition flex items-center justify-center gap-2 font-semibold text-lg"
+              className="px-8 py-4 border-2 border-slate-300 text-white dark:text-slate-300 rounded-lg hover:bg-blue-50  transition flex items-center justify-center gap-2 font-semibold text-lg"
             >
               Learn More
             </a>
           </div>
 
-          <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-slate-600 dark:text-slate-400">
+          <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-white dark:text-white">
             <div className="flex items-center gap-2">
-              <Shield className="w-5 h-5 text-blue-600 dark:text-blue-500" />
+              <Shield className="w-5 h-5 text-white" />
               <span>UI Verified Only</span>
             </div>
             <div className="flex items-center gap-2">
-              <Heart className="w-5 h-5 text-blue-600 dark:text-blue-500" />
+              <Heart className="w-5 h-5 text-white" />
               <span>100% Free</span>
             </div>
             <div className="flex items-center gap-2">
-              <CheckCircle className="w-5 h-5 text-blue-600 dark:text-blue-500" />
+              <CheckCircle className="w-5 h-5 text-white" />
               <span>Takes 2 Minutes</span>
             </div>
           </div>
