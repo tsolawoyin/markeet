@@ -12,10 +12,11 @@ import PWAInstall from "@/components/pwa-install";
 import ServiceWorkerCleanup from "@/components/sw-cleanup";
 
 export const metadata: Metadata = {
-  title: "Markeet",
+  title: "Markeet - UI Student Marketplace",
   description:
-    "A trusted, campus-focused marketplace where verified students can easily list, discover, and transact items",
+    "A trusted, campus-focused marketplace where verified UI students can easily list, discover, and transact items",
   manifest: "/manifest.json",
+  keywords: ["marketplace", "UI students", "buy and sell", "campus trading"],
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
@@ -23,6 +24,22 @@ export const metadata: Metadata = {
   },
   formatDetection: {
     telephone: false,
+  },
+  icons: {
+    icon: "/icons/192.png",
+    apple: "/icons/180.png",
+    other: [
+      {
+        rel: "icon",
+        url: "/icons/32.png",
+        sizes: "32x32",
+      },
+      {
+        rel: "icon",
+        url: "/icons/192.png",
+        sizes: "192x192",
+      },
+    ],
   },
 };
 

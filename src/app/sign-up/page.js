@@ -89,8 +89,8 @@ export default function SignupForm() {
 
       case "email":
         if (!value.trim()) return "Email is required";
-        if (!/^[a-zA-Z0-9._%+-]+@stu\.ui\.edu\.ng$/i.test(value)) {
-          return "Must be a valid @stu.ui.edu.ng email address";
+        if (!/^[a-zA-Z0-9._%+-]+@(stu|dlc)\.ui\.edu\.ng$/i.test(value)) {
+          return "Must be a valid @stu.ui.edu.ng or @dlc.ui.edu.ng email address";
         }
         return "";
 
