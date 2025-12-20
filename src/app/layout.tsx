@@ -10,6 +10,7 @@ import Shell from "@/shell/shell";
 import { ThemeProvider } from "@/components/theme-store";
 import PWAInstall from "@/components/pwa-install";
 import ServiceWorkerCleanup from "@/components/sw-cleanup";
+import { UpdateNotification } from "@/components/update-notification"; // ADD THIS
 
 export const metadata: Metadata = {
   title: "Markeet - UI Student Marketplace",
@@ -119,6 +120,7 @@ export default async function RootLayout({
           </Suspense>
           <PWAInstall />
           <ServiceWorkerCleanup />
+          <UpdateNotification />
         </ThemeProvider>
       </body>
     </html>

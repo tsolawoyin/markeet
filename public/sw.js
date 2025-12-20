@@ -1,34 +1,34 @@
-const CACHE_NAME = 'markeet-v1';
+const CACHE_VERSION = "v1.0.0"; // Increment this with each deployment
+const CACHE_NAME = `markeet-cache-${CACHE_VERSION}`;
 const urlsToCache = [
-  '/',
-  '/browse',
-  '/profile/me',
-  '/create',
-  '/sign-up',
-  '/login',
+  "/",
+  "/browse",
+  "/profile/me",
+  "/create",
+  "/sign-up",
+  "/login",
 ];
 
 // Install event - cache essential resources
-self.addEventListener('install', (event) => {
+self.addEventListener("install", (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then((cache) => {
-        console.log('Opened cache');
-        return cache.addAll(urlsToCache);
-      })
+    caches.open(CACHE_NAME).then((cache) => {
+      console.log("Opened cache");
+      return cache.addAll(urlsToCache);
+    })
   );
   // Force the waiting service worker to become the active service worker
   self.skipWaiting();
 });
 
 // Activate event - clean up old caches
-self.addEventListener('activate', (event) => {
+self.addEventListener("activate", (event) => {
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(
         cacheNames.map((cacheName) => {
           if (cacheName !== CACHE_NAME) {
-            console.log('Deleting old cache:', cacheName);
+            console.log("Deleting old cache:", cacheName);
             return caches.delete(cacheName);
           }
         })
@@ -39,40 +39,60 @@ self.addEventListener('activate', (event) => {
   return self.clients.claim();
 });
 
-// Fetch event - serve from cache when offline
-self.addEventListener('fetch', (event) => {
+// Listen for skip waiting message
+self.addEventListener("message", (event) => {
+  if (event.data && event.data.type === "SKIP_WAITING") {
+    self.skipWaiting();
+  }
+});
+
+// Fetch event - network first for HTML, cache first for assets
+self.addEventListener("fetch", (event) => {
   // Skip cross-origin requests
   if (!event.request.url.startsWith(self.location.origin)) {
     return;
   }
 
+  // Network-first for HTML
+  if (event.request.headers.get("Accept")?.includes("text/html")) {
+    event.respondWith(
+      fetch(event.request)
+        .then((response) => {
+          const responseToCache = response.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(event.request, responseToCache);
+          });
+          return response;
+        })
+        .catch(() => {
+          return caches.match(event.request);
+        })
+    );
+    return;
+  }
+
+  // Cache-first for other assets
   event.respondWith(
-    caches.match(event.request)
-      .then((response) => {
-        // Cache hit - return response
-        if (response) {
+    caches.match(event.request).then((response) => {
+      if (response) {
+        return response;
+      }
+
+      const fetchRequest = event.request.clone();
+
+      return fetch(fetchRequest).then((response) => {
+        if (!response || response.status !== 200 || response.type !== "basic") {
           return response;
         }
 
-        // Clone the request
-        const fetchRequest = event.request.clone();
+        const responseToCache = response.clone();
 
-        return fetch(fetchRequest).then((response) => {
-          // Check if valid response
-          if (!response || response.status !== 200 || response.type !== 'basic') {
-            return response;
-          }
-
-          // Clone the response
-          const responseToCache = response.clone();
-
-          caches.open(CACHE_NAME)
-            .then((cache) => {
-              cache.put(event.request, responseToCache);
-            });
-
-          return response;
+        caches.open(CACHE_NAME).then((cache) => {
+          cache.put(event.request, responseToCache);
         });
-      })
+
+        return response;
+      });
+    })
   );
 });
