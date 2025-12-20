@@ -72,7 +72,7 @@ export default function Shell({ children, supabase_user }) {
     >
       <div className="w-full h-screen">
         {/* {user && <Header />} */}
-        <div className={`flex-1 ${user && "pb-20"} md:pb-0`}>{children}</div>
+        <div className={`flex-1 ${user && "pb-20"} md:pb-0 dark:bg-slate-800`}>{children}</div>
         {user && currentPath != "/onboarding" && <Footer />}
       </div>
     </ShellContext.Provider>
