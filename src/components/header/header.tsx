@@ -113,7 +113,7 @@ export default function Header({
         <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <span className="text-xl text-gray-900 dark:text-white">
-              Blogs
+              <Link href="/blog">Blogs</Link>
             </span>
           </div>
           <ProfileMenu />
