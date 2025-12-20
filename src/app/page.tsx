@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 import {
   Shield,
   Users,
@@ -12,8 +12,8 @@ import {
   Zap,
   Heart,
   Clock,
-  AlertTriangle
-} from 'lucide-react';
+  AlertTriangle,
+} from "lucide-react";
 
 export default function MarketHomePage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -23,26 +23,26 @@ export default function MarketHomePage() {
     const handleScroll = () => {
       setScrolled(window.scrollY > 20);
     };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   const painPoints = [
     {
       icon: Clock,
       title: "Trekking Halls All Day",
-      desc: "Walking between halls, climbing stairs, knocking doors. You're exhausted by evening and still haven't found what you need."
+      desc: "Walking between halls, climbing stairs, knocking doors. You're exhausted by evening and still haven't found what you need.",
     },
     {
       icon: AlertTriangle,
       title: "No Trust & Safety",
-      desc: "Worried about scams, fake products, or overpaying. Hard to verify sellers when everyone's a stranger."
+      desc: "Worried about scams, fake products, or overpaying. Hard to verify sellers when everyone's a stranger.",
     },
     {
       icon: Users,
       title: "Scattered & Disconnected",
-      desc: "Students with items and students needing items never meet. Listings scattered across WhatsApp groups and shouts."
-    }
+      desc: "Students with items and students needing items never meet. Listings scattered across WhatsApp groups and shouts.",
+    },
   ];
 
   const solutions = [
@@ -50,39 +50,46 @@ export default function MarketHomePage() {
       icon: Shield,
       title: "UI Students Only",
       desc: "Verified through your @stu.ui.edu.ng email. Safe, trusted community.",
-      color: "blue"
+      color: "blue",
     },
     {
       icon: Zap,
       title: "List in 2 Minutes",
       desc: "Photo. Price. Done. Fast and simple, no complications.",
-      color: "amber"
+      color: "amber",
     },
     {
       icon: Users,
       title: "Find Nearby",
       desc: "See items in your hall first. Easy meetups at safe locations.",
-      color: "slate"
+      color: "slate",
     },
     {
       icon: Heart,
       title: "Free Forever",
       desc: "No fees. No premium. Free for all UItes, always.",
-      color: "green"
-    }
+      color: "green",
+    },
   ];
 
   return (
     <div className="min-h-screen bg-white dark:bg-slate-950">
       {/* Navigation */}
-      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled
-          ? 'bg-white/95 dark:bg-slate-950/95 backdrop-blur-lg shadow-md border-b border-slate-200 dark:border-slate-800'
-          : 'bg-transparent'
-        }`}>
+      <nav
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+          scrolled
+            ? "bg-white/95 dark:bg-slate-950/95 backdrop-blur-lg shadow-md border-b border-slate-200 dark:border-slate-800"
+            : "bg-transparent"
+        }`}
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 md:h-20">
             <div className="flex items-center gap-2 md:gap-3">
-              <span className={`text-2xl md:text-3xl font-bold ${scrolled ? "text-blue-600" : "text-white"}`}>
+              <span
+                className={`text-2xl md:text-3xl font-bold ${
+                  scrolled ? "text-blue-600" : "text-white"
+                }`}
+              >
                 Markeet
               </span>
             </div>
@@ -123,16 +130,28 @@ export default function MarketHomePage() {
           {isMenuOpen && (
             <div className="md:hidden py-4 border-t border-gray-200 dark:border-gray-700">
               <div className="flex flex-col gap-4">
-                <a href="#problem" className="text-gray-700 dark:text-gray-300 hover:text-blue-900 dark:hover:text-blue-400 transition">
+                <a
+                  href="#problem"
+                  className="text-gray-700 dark:text-gray-300 hover:text-blue-900 dark:hover:text-blue-400 transition"
+                >
                   The Problem
                 </a>
-                <a href="#solution" className="text-gray-700 dark:text-gray-300 hover:text-blue-900 dark:hover:text-blue-400 transition">
+                <a
+                  href="#solution"
+                  className="text-gray-700 dark:text-gray-300 hover:text-blue-900 dark:hover:text-blue-400 transition"
+                >
                   The Solution
                 </a>
-                <a href="#vision" className="text-gray-700 dark:text-gray-300 hover:text-blue-900 dark:hover:text-blue-400 transition">
+                <a
+                  href="#vision"
+                  className="text-gray-700 dark:text-gray-300 hover:text-blue-900 dark:hover:text-blue-400 transition"
+                >
                   The Vision
                 </a>
-                <a href="/login" className="text-gray-700 dark:text-gray-300 hover:text-blue-900 dark:hover:text-blue-400 transition">
+                <a
+                  href="/login"
+                  className="text-gray-700 dark:text-gray-300 hover:text-blue-900 dark:hover:text-blue-400 transition"
+                >
                   Login
                 </a>
                 <a
@@ -148,43 +167,50 @@ export default function MarketHomePage() {
       </nav>
 
       {/* Hero Section */}
-      <section className="pt-32 pb-24 px-4 sm:px-6 lg:px-8 homepage-hero-bg">
+      <section
+        className="pt-32 pb-24 px-4 sm:px-6 lg:px-8 relative bg-cover bg-center"
+        style={{ backgroundImage: "url('/babe.jpeg')" }}
+      >
+        {/* Dark overlay for better text readability */}
+        <div className="absolute inset-0 bg-black/60 z-[1]"></div>
+
         <div className="max-w-4xl mx-auto text-center relative z-10">
-          <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-white dark:text-white mb-6 leading-tight">
+          <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-6 leading-tight drop-shadow-2xl">
             Buy & Sell on Campus
-            <span className="block text-blue-700 dark:text-blue-500">The Right Way</span>
+            <span className="block text-blue-400">The Right Way</span>
           </h1>
 
-          <p className="text-xl md:text-2xl text-white dark:text-slate-300 mb-8 max-w-3xl mx-auto leading-relaxed">
-            A trusted marketplace for UI students. No scams. No middlemen. Just students helping students.
+          <p className="text-xl md:text-2xl text-white font-semibold mb-8 max-w-3xl mx-auto leading-relaxed drop-shadow-lg">
+            A trusted marketplace for UI students. No scams. No middlemen. Just
+            students helping students.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
             <a
               href="/sign-up"
-              className="group px-8 py-4 bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700 text-white rounded-lg transition transform hover:scale-105 shadow-lg flex items-center justify-center gap-2 font-semibold text-lg"
+              className="group px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition transform hover:scale-105 shadow-lg flex items-center justify-center gap-2 font-semibold text-lg"
             >
               Get Started Free
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition" />
             </a>
             <a
               href="#features"
-              className="px-8 py-4 border-2 border-slate-300 text-white dark:text-slate-300 rounded-lg hover:bg-blue-50  transition flex items-center justify-center gap-2 font-semibold text-lg"
+              className="px-8 py-4 bg-white/10 backdrop-blur-sm border-2 border-white/30 text-white rounded-lg hover:bg-white/20 transition flex items-center justify-center gap-2 font-semibold text-lg"
             >
               Learn More
             </a>
           </div>
 
-          <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-white dark:text-white">
-            <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-white">
+            <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full">
               <Shield className="w-5 h-5 text-white" />
               <span>UI Verified Only</span>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full">
               <Heart className="w-5 h-5 text-white" />
               <span>100% Free</span>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full">
               <CheckCircle className="w-5 h-5 text-white" />
               <span>Takes 2 Minutes</span>
             </div>
@@ -244,10 +270,22 @@ export default function MarketHomePage() {
             {solutions.map((solution, index) => {
               const Icon = solution.icon;
               const colorMap = {
-                blue: { bg: 'bg-blue-100 dark:bg-blue-900/30', text: 'text-blue-600 dark:text-blue-500' },
-                amber: { bg: 'bg-amber-100 dark:bg-amber-900/30', text: 'text-amber-600 dark:text-amber-500' },
-                slate: { bg: 'bg-slate-100 dark:bg-slate-700', text: 'text-slate-600 dark:text-slate-400' },
-                green: { bg: 'bg-green-100 dark:bg-green-900/30', text: 'text-green-600 dark:text-green-500' }
+                blue: {
+                  bg: "bg-blue-100 dark:bg-blue-900/30",
+                  text: "text-blue-600 dark:text-blue-500",
+                },
+                amber: {
+                  bg: "bg-amber-100 dark:bg-amber-900/30",
+                  text: "text-amber-600 dark:text-amber-500",
+                },
+                slate: {
+                  bg: "bg-slate-100 dark:bg-slate-700",
+                  text: "text-slate-600 dark:text-slate-400",
+                },
+                green: {
+                  bg: "bg-green-100 dark:bg-green-900/30",
+                  text: "text-green-600 dark:text-green-500",
+                },
               };
               const colors = colorMap[solution.color];
 
@@ -256,7 +294,9 @@ export default function MarketHomePage() {
                   key={index}
                   className="bg-white dark:bg-slate-800 rounded-xl p-6 shadow-sm border border-slate-200 dark:border-slate-700 hover:shadow-md transition"
                 >
-                  <div className={`w-12 h-12 ${colors.bg} rounded-lg flex items-center justify-center mb-4`}>
+                  <div
+                    className={`w-12 h-12 ${colors.bg} rounded-lg flex items-center justify-center mb-4`}
+                  >
                     <Icon className={`w-6 h-6 ${colors.text}`} />
                   </div>
                   <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">
@@ -279,7 +319,8 @@ export default function MarketHomePage() {
             Join 10,000+ Students
           </h2>
           <p className="text-xl text-slate-300 mb-8 max-w-2xl mx-auto">
-            Be part of a community that's changing how students buy and sell on campus.
+            Be part of a community that's changing how students buy and sell on
+            campus.
           </p>
 
           <a
@@ -308,23 +349,25 @@ export default function MarketHomePage() {
               {
                 step: "1",
                 title: "Sign Up",
-                desc: "Use your @stu.ui.edu.ng email. Takes 2 minutes."
+                desc: "Use your @stu.ui.edu.ng email. Takes 2 minutes.",
               },
               {
                 step: "2",
                 title: "List or Browse",
-                desc: "Sell items or find what you need from verified students."
+                desc: "Sell items or find what you need from verified students.",
               },
               {
                 step: "3",
                 title: "Meet & Trade",
-                desc: "Connect with buyers/sellers safely on campus."
-              }
+                desc: "Connect with buyers/sellers safely on campus.",
+              },
             ].map((item, idx) => (
               <div key={idx} className="flex gap-6">
                 <div className="flex-shrink-0">
                   <div className="flex items-center justify-center h-12 w-12 rounded-lg bg-blue-600 dark:bg-blue-700">
-                    <span className="text-white font-bold text-lg">{item.step}</span>
+                    <span className="text-white font-bold text-lg">
+                      {item.step}
+                    </span>
                   </div>
                 </div>
                 <div>
@@ -352,20 +395,20 @@ export default function MarketHomePage() {
             {[
               {
                 q: "Is this really free?",
-                a: "Yes, 100% free. No hidden charges, no premium features. We're just building something useful for students."
+                a: "Yes, 100% free. No hidden charges, no premium features. We're just building something useful for students.",
               },
               {
                 q: "How do I know people are real?",
-                a: "Everyone on Markeet uses their UI email (@stu.ui.edu.ng). That's your verification."
+                a: "Everyone on Markeet uses their UI email (@stu.ui.edu.ng). That's your verification.",
               },
               {
                 q: "What if I have a problem?",
-                a: "Reach out directly. We're here to help. Email: t.olawoyin@outlook.com"
+                a: "Reach out directly. We're here to help. Email: t.olawoyin@outlook.com",
               },
               {
                 q: "Do I have to sell to join?",
-                a: "Nope. Just sign up. You can browse first and sell whenever you're ready."
-              }
+                a: "Nope. Just sign up. You can browse first and sell whenever you're ready.",
+              },
             ].map((faq, idx) => (
               <div
                 key={idx}
@@ -374,9 +417,7 @@ export default function MarketHomePage() {
                 <h3 className="font-bold text-slate-900 dark:text-white mb-2">
                   Q: {faq.q}
                 </h3>
-                <p className="text-slate-600 dark:text-slate-400">
-                  A: {faq.a}
-                </p>
+                <p className="text-slate-600 dark:text-slate-400">A: {faq.a}</p>
               </div>
             ))}
           </div>
@@ -390,7 +431,8 @@ export default function MarketHomePage() {
             Ready to Join?
           </h2>
           <p className="text-lg text-blue-50 mb-10 max-w-2xl mx-auto">
-            Start buying and selling on campus today. Free forever, no credit card needed.
+            Start buying and selling on campus today. Free forever, no credit
+            card needed.
           </p>
           <a
             href="/sign-up"

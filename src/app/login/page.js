@@ -36,7 +36,10 @@ export default function LoginForm() {
 
   // Email validation for UI students
   const isValidUIEmail = (email) => {
-    return email.toLowerCase().endsWith("@stu.ui.edu.ng") || email.toLowerCase().endsWith("@dlc.ui.edu.ng");
+    return (
+      email.toLowerCase().endsWith("@stu.ui.edu.ng") ||
+      email.toLowerCase().endsWith("@dlc.ui.edu.ng")
+    );
   };
 
   const handleSubmit = async () => {
