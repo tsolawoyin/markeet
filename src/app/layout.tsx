@@ -74,6 +74,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  await new Promise(resolve => setTimeout(resolve, 5000)); // Simulate some async operation like fetching user data
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
