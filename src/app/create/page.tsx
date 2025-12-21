@@ -3,8 +3,6 @@
 // ============================================
 
 import { Suspense } from "react";
-import { createClient } from "@/utils/supabase/server";
-import { redirect } from "next/navigation";
 import ListingFormClient from "./listing-form-client";
 import { ListingFormSkeleton } from "./listing-form-skeleton";
 
