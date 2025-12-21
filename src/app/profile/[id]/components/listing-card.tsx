@@ -88,7 +88,7 @@ export default function ListingCard({
         <>
             <div className="border border-gray-200 dark:border-gray-700 rounded-xl hover:shadow-md transition overflow-hidden">
                 <Link href={`/browse/${listing.id}`}>
-                    <div className="aspect-square bg-gradient-to-br relative overflow-hidden">
+                    <div className="aspect-square bg-linear-to-br relative overflow-hidden">
                         {listing.images && listing.images.length > 0 ? (
                             <img
                                 src={listing.images[0]}
@@ -97,7 +97,7 @@ export default function ListingCard({
                             />
                         ) : (
                             <div
-                                className={`w-full h-full bg-gradient-to-br ${getGradientColor(
+                                className={`w-full h-full bg-linear-to-br ${getGradientColor(
                                     listing.category
                                 )} dark:opacity-90`}
                             ></div>
