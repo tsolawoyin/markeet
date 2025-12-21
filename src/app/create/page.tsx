@@ -12,20 +12,9 @@ import { ListingFormSkeleton } from "./listing-form-skeleton";
 export default async function ListingFormPage({
   searchParams,
 }: {
-  searchParams: { id?: string };
+  searchParams: Promise<{ [key: string]: string | undefined }>;
 }) {
-  const supabase = await createClient();
-
-  // Check authentication
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  console.log("USER IN CREATE PAGE:", user);
-
-  if (!user) {
-    redirect("/login");
-  }
-
+  // no need to checj for auth here. Proxy covers that
   // Get listing ID from search params (if editing)
   const params = await searchParams;
   const listingId = params?.id;
@@ -34,7 +23,7 @@ export default async function ListingFormPage({
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pb-20">
       <Suspense fallback={<ListingFormSkeleton isEditing={isEditing} />}>
-        <ListingFormClient userId={user.id} listingId={listingId} />
+        <ListingFormClient listingId={listingId} />
       </Suspense>
     </div>
   );

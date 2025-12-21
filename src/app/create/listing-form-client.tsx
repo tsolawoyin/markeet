@@ -40,14 +40,13 @@ const conditions = [
 ];
 
 export default function ListingFormClient({
-    userId,
     listingId,
 }: {
-    userId: string;
     listingId?: string;
 }) {
     const router = useRouter();
     const { supabase, user } = useContext(ShellContext);
+    const userId = user?.id;
     const isEditing = !!listingId;
 
     const [userProfile, setUserProfile] = useState<any>(null);
