@@ -96,3 +96,31 @@ self.addEventListener("fetch", (event) => {
     })
   );
 });
+
+// Push notification handler
+self.addEventListener("push", (event) => {
+  const data = event.data ? event.data.json() : {};
+
+  const options = {
+    body: data.body || "New update on Markeet",
+    icon: "/icons/192.png",
+    badge: "/icons/96.png",
+    tag: data.tag || "default",
+    data: data.url ? { url: data.url } : {},
+    actions: data.actions || [],
+    vibrate: [200, 100, 200],
+  };
+
+  event.waitUntil(
+    self.registration.showNotification(data.title || "Markeet", options)
+  );
+});
+
+// Handle notification clicks
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+
+  if (event.notification.data && event.notification.data.url) {
+    event.waitUntil(clients.openWindow(event.notification.data.url));
+  }
+});

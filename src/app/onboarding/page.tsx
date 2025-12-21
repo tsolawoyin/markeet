@@ -2,72 +2,108 @@
 
 import { useState, useEffect, useContext } from "react";
 import { ShellContext } from "@/shell/shell";
-
-import {
-  Bell,
-  Download,
-  Share2,
-  CheckCircle,
-  Sparkles,
-  ArrowRight,
-  X,
-  Smartphone,
-  Chrome,
-  AlertCircle,
-} from "lucide-react";
+import { Bell, CheckCircle, ArrowRight, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
-
 import Image from "next/image";
 import Link from "next/link";
 
+// Helper function to convert base64 to Uint8Array
+function urlBase64ToUint8Array(base64String: string) {
+  const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
+  const base64 = (base64String + padding)
+    .replace(/\-/g, "+")
+    .replace(/_/g, "/");
+
+  const rawData = window.atob(base64);
+  const outputArray = new Uint8Array(rawData.length);
+
+  for (let i = 0; i < rawData.length; ++i) {
+    outputArray[i] = rawData.charCodeAt(i);
+  }
+  return outputArray;
+}
+
 export default function OnboardingPage() {
-  const { user } = useContext(ShellContext);
+  const { user, supabase } = useContext(ShellContext);
   const [notificationStatus, setNotificationStatus] = useState("default");
   const [isIOS, setIsIOS] = useState(false);
+  const [subscribing, setSubscribing] = useState(false);
 
   useEffect(() => {
-    // Detect iOS
-    const isAppleDevice = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    const isAppleDevice =
+      /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
     setIsIOS(isAppleDevice);
 
-    // Check current notification permission status on mount
     if ("Notification" in window && !isAppleDevice) {
       setNotificationStatus(Notification.permission);
     }
   }, []);
 
+  const subscribeToPushNotifications = async () => {
+    try {
+      setSubscribing(true);
+
+      // Request notification permission
+      const permission = await Notification.requestPermission();
+      setNotificationStatus(permission);
+
+      if (permission !== "granted") {
+        return;
+      }
+
+      // Get service worker registration
+      const registration = await navigator.serviceWorker.ready;
+
+      // Subscribe to push notifications
+      const subscription = await registration.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array(
+          process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!
+        ),
+      });
+
+      // Save subscription to database
+      const subscriptionJSON = subscription.toJSON();
+
+      const { error } = await supabase.from("push_subscriptions").upsert(
+        {
+          user_id: user.id,
+          endpoint: subscriptionJSON.endpoint,
+          p256dh: subscriptionJSON.keys?.p256dh,
+          auth: subscriptionJSON.keys?.auth,
+        },
+        {
+          onConflict: "endpoint",
+        }
+      );
+
+      if (error) throw error;
+
+      // Show test notification
+      new Notification("🎉 Notifications Enabled!", {
+        body: "You'll now receive updates about new listings and blog posts",
+        icon: "/icons/192.png",
+      });
+    } catch (error) {
+      console.error("Error subscribing to push notifications:", error);
+      alert("Failed to enable notifications. Please try again.");
+    } finally {
+      setSubscribing(false);
+    }
+  };
+
   const handleNotificationClick = async () => {
-    // iOS doesn't support Notifications API
     if (isIOS) {
       alert(
         "iOS doesn't support web push notifications in Safari yet. " +
-        "If you installed Markeet as an app, notifications will work when we add that feature. " +
-        "For now, make sure to turn on app notifications in your device settings."
+          "If you installed Markeet as an app, notifications will work when we add that feature. " +
+          "For now, make sure to turn on app notifications in your device settings."
       );
       return;
     }
 
-    if ("Notification" in window) {
-      try {
-        const permission = await Notification.requestPermission();
-        setNotificationStatus(permission);
-
-        // Show confirmation notification if granted
-        if (permission === "granted") {
-          new Notification("🎉 Notifications Enabled!", {
-            body: "You'll now receive updates about listings and messages",
-            icon: "/favicon.ico",
-          });
-        }
-      } catch (error) {
-        console.error("Error requesting notification permission:", error);
-      }
-    }
+    await subscribeToPushNotifications();
   };
-
-  console.log("OnboardingPage user:", user);
-  console.log("Notification status:", notificationStatus);
-  console.log("Is iOS:", isIOS);
 
   return (
     <div className="min-h-screen bg-background text-foreground dark:bg-slate-950 dark:text-slate-50 py-8 px-4">
@@ -83,9 +119,6 @@ export default function OnboardingPage() {
               className="w-full max-w-md rounded-lg object-cover mx-auto"
             />
           </div>
-          {/* <h1 className="text-4xl md:text-5xl font-bold mb-3 text-center">
-            Welcome to <span className="text-blue-600 dark:text-blue-400">Markeet</span>
-          </h1> */}
           <p className="text-xl text-center text-muted-foreground mb-2">
             Hi <strong>{user.user_metadata.full_name}</strong>!
           </p>
@@ -97,7 +130,7 @@ export default function OnboardingPage() {
         {/* Next Steps Section */}
         <div className="bg-card border border-border rounded-xl p-8 dark:bg-slate-900 dark:border-slate-800 shadow-sm">
           <h2 className="text-2xl font-semibold mb-8">Next Steps</h2>
-          
+
           <div className="space-y-6">
             {/* Notification Setting */}
             <div className="pb-6 border-b border-border dark:border-slate-800 last:border-0 last:pb-0">
@@ -105,9 +138,12 @@ export default function OnboardingPage() {
                 <div className="flex items-start gap-3">
                   <Bell className="h-5 w-5 text-blue-600 dark:text-blue-400 mt-1 flex-shrink-0" />
                   <div>
-                    <h3 className="text-lg font-semibold">Enable Notifications</h3>
+                    <h3 className="text-lg font-semibold">
+                      Enable Notifications
+                    </h3>
                     <p className="text-sm text-muted-foreground mt-1">
-                      Get alerts about new listings, messages, and deals on campus.
+                      Get instant alerts when new items are listed on campus and
+                      when we publish new blog posts.
                     </p>
                   </div>
                 </div>
@@ -121,10 +157,13 @@ export default function OnboardingPage() {
                       <div className="text-sm text-amber-700 dark:text-amber-400">
                         <p className="font-semibold mb-2">iOS Users</p>
                         <p className="mb-2">
-                          Safari doesn't support web push notifications yet. However, if you install Markeet as an app, you can enable notifications in your device settings.
+                          Safari doesn't support web push notifications yet.
+                          However, if you install Markeet as an app, you can
+                          enable notifications in your device settings.
                         </p>
                         <p className="text-xs opacity-90">
-                          Steps: Settings → Installed Apps → Markeet → Notifications → Allow
+                          Steps: Settings → Installed Apps → Markeet →
+                          Notifications → Allow
                         </p>
                       </div>
                     </div>
@@ -152,11 +191,12 @@ export default function OnboardingPage() {
                 ) : (
                   <Button
                     onClick={handleNotificationClick}
+                    disabled={subscribing}
                     className="bg-blue-600 hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-600 text-white"
                     size="sm"
                   >
                     <Bell className="mr-2 h-4 w-4" />
-                    Enable Notifications
+                    {subscribing ? "Enabling..." : "Enable Notifications"}
                   </Button>
                 )}
               </div>
