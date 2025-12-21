@@ -31,7 +31,7 @@ export default function OnboardingPage() {
 
   useEffect(() => {
     const isAppleDevice =
-      /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+      /iPad|iPhone|iPod/.test(navigator.userAgent);
     setIsIOS(isAppleDevice);
 
     if ("Notification" in window && !isAppleDevice) {
