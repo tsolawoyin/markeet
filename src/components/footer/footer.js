@@ -16,7 +16,7 @@ const navigationItems = [
 //     icon: Search,
 //   },
   {
-    url: "/create?id=null",
+    url: "/create",
     name: "Post",
     icon: Plus,
   },
