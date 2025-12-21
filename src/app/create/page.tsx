@@ -20,6 +20,7 @@ export default async function ListingFormPage({
   const {
     data: { user },
   } = await supabase.auth.getUser();
+  console.log("USER IN CREATE PAGE:", user);
 
   if (!user) {
     redirect("/login");

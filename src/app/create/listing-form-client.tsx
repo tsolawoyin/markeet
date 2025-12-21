@@ -81,6 +81,7 @@ export default function ListingFormClient({
 
     const fetchData = async () => {
         try {
+            console.log("run")
             // Fetch user profile
             const { data: profile, error: profileError } = await supabase
                 .from("profiles")
@@ -90,6 +91,8 @@ export default function ListingFormClient({
 
             if (profileError) throw profileError;
             setUserProfile(profile);
+
+            console.log("not run")
 
             // If editing, fetch existing listing
             if (isEditing && listingId) {

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Ubuntu } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 
 import { createClient } from "@/utils/supabase/server";
@@ -51,8 +52,8 @@ export const metadata: Metadata = {
 
 const ubuntu = Ubuntu({
   weight: ["300", "400", "500", "700"],
-  subsets: ["latin"]
-})
+  subsets: ["latin"],
+});
 
 const Dynamic = async ({ children }: any) => {
   const supabase = await createClient();
@@ -62,12 +63,8 @@ const Dynamic = async ({ children }: any) => {
   //   return <p>We have problems verifying you. Please refresh.</p>
   // }
   // I don tire for all these rules and regulations.
-  return (
-    <Shell supabase_user={data}>
-      {children}
-    </Shell>
-  )
-}
+  return <Shell supabase_user={data}>{children}</Shell>;
+};
 
 export default async function RootLayout({
   children,
@@ -78,33 +75,52 @@ export default async function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <head>
         <meta charSet="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=5, user-scalable=yes" />
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=5, user-scalable=yes"
+        />
         <meta name="theme-color" content="#2563eb" />
         <meta name="color-scheme" content="light dark" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta
+          name="apple-mobile-web-app-status-bar-style"
+          content="black-translucent"
+        />
         <meta name="apple-mobile-web-app-title" content="Markeet" />
         <meta name="application-name" content="Markeet" />
-        
+
         {/* PWA Manifest */}
         <link rel="manifest" href="/manifest.json" />
-        
+
         {/* Icons for different browsers */}
         <link rel="icon" type="image/png" sizes="32x32" href="/icons/32.png" />
-        <link rel="icon" type="image/png" sizes="192x192" href="/icons/192.png" />
-        <link rel="icon" type="image/png" sizes="512x512" href="/icons/512.png" />
-        
+        <link
+          rel="icon"
+          type="image/png"
+          sizes="192x192"
+          href="/icons/192.png"
+        />
+        <link
+          rel="icon"
+          type="image/png"
+          sizes="512x512"
+          href="/icons/512.png"
+        />
+
         {/* Apple Web App Icons */}
         <link rel="apple-touch-icon" href="/icons/180.png" />
         <link rel="apple-touch-icon" sizes="152x152" href="/icons/152.png" />
         <link rel="apple-touch-icon" sizes="167x167" href="/icons/167.png" />
-        
+
         {/* Start URL */}
         <meta name="start_url" content="/" />
-        
+
         {/* Disable cache for PWA */}
-        <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+        <meta
+          http-equiv="Cache-Control"
+          content="no-cache, no-store, must-revalidate"
+        />
         <meta http-equiv="Pragma" content="no-cache" />
         <meta http-equiv="Expires" content="0" />
       </head>
@@ -115,6 +131,7 @@ export default async function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
+          <Analytics />
           <Suspense>
             <Dynamic>{children}</Dynamic>
           </Suspense>
