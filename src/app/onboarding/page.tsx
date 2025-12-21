@@ -136,7 +136,7 @@ export default function OnboardingPage() {
             <div className="pb-6 border-b border-border dark:border-slate-800 last:border-0 last:pb-0">
               <div className="flex items-start justify-between mb-4">
                 <div className="flex items-start gap-3">
-                  <Bell className="h-5 w-5 text-blue-600 dark:text-blue-400 mt-1 flex-shrink-0" />
+                  <Bell className="h-5 w-5 text-blue-600 dark:text-blue-400 mt-1 shrink-0" />
                   <div>
                     <h3 className="text-lg font-semibold">
                       Enable Notifications
@@ -153,7 +153,7 @@ export default function OnboardingPage() {
                 {isIOS ? (
                   <div className="space-y-3">
                     <div className="flex items-start gap-2 px-4 py-3 bg-amber-50 dark:bg-amber-950/30 rounded-lg border border-amber-200 dark:border-amber-800/50">
-                      <AlertCircle className="h-5 w-5 text-amber-600 dark:text-amber-500 flex-shrink-0 mt-0.5" />
+                      <AlertCircle className="h-5 w-5 text-amber-600 dark:text-amber-500 shrink-0 mt-0.5" />
                       <div className="text-sm text-amber-700 dark:text-amber-400">
                         <p className="font-semibold mb-2">iOS Users</p>
                         <p className="mb-2">
@@ -178,12 +178,12 @@ export default function OnboardingPage() {
                   </div>
                 ) : notificationStatus === "granted" ? (
                   <div className="flex items-center gap-2 text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-950/30 px-4 py-3 rounded-lg border border-green-200 dark:border-green-800/50 w-fit">
-                    <CheckCircle className="h-5 w-5 flex-shrink-0" />
+                    <CheckCircle className="h-5 w-5 shrink-0" />
                     <span className="font-medium">Notifications enabled ✓</span>
                   </div>
                 ) : notificationStatus === "denied" ? (
                   <div className="flex items-center gap-2 text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/30 px-4 py-3 rounded-lg border border-red-200 dark:border-red-800/50">
-                    <AlertCircle className="h-5 w-5 flex-shrink-0" />
+                    <AlertCircle className="h-5 w-5 shrink-0" />
                     <span className="text-sm font-medium">
                       Notifications blocked. Enable in browser settings.
                     </span>
