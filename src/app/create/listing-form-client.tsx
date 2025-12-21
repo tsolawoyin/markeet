@@ -581,7 +581,7 @@ export default function ListingFormClient({
 
                     {/* Safety Notice */}
                     <div className="flex items-start gap-2 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
-                        <Shield className="w-5 h-5 text-blue-900 dark:text-blue-400 mt-0.5 flex-shrink-0" />
+                        <Shield className="w-5 h-5 text-blue-900 dark:text-blue-400 mt-0.5 shrink-0" />
                         <div>
                             <p className="text-sm font-medium text-gray-900 dark:text-white mb-1">
                                 Safety Tips
