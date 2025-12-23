@@ -28,6 +28,7 @@ import {
 } from "lucide-react";
 import { ShellContext } from "@/shell/shell";
 import Link from "next/link";
+import Image from "next/image";
 
 export default function ListingDetailClient({ listingId }) {
   const router = useRouter();
@@ -207,9 +208,16 @@ export default function ListingDetailClient({ listingId }) {
             <div className="aspect-square rounded-2xl relative overflow-hidden bg-white dark:bg-gray-800">
               {listing.images && listing.images.length > 0 ? (
                 <>
-                  <img
+                  {/* <img
                     src={listing.images[selectedImage]}
                     alt={listing.title}
+                    className="w-full h-full object-cover"
+                  /> */}
+                  <Image
+                    src={item.images[selectedImage]}
+                    alt={listing.title}
+                    width={500}
+                    height={500}
                     className="w-full h-full object-cover"
                   />
                   {listing.is_featured && (
@@ -220,9 +228,7 @@ export default function ListingDetailClient({ listingId }) {
                 </>
               ) : (
                 <div
-                  className={`w-full h-full bg-linear-to-br ${
-                    gradientColors[gradientIndex]
-                  } dark:opacity-90 flex items-center justify-center`}
+                  className={`w-full h-full bg-linear-to-br ${gradientColors[gradientIndex]} dark:opacity-90 flex items-center justify-center`}
                 >
                   <div className="text-center">
                     <Tag className="w-16 h-16 mx-auto text-gray-400 dark:text-gray-600 mb-2" />
@@ -247,9 +253,11 @@ export default function ListingDetailClient({ listingId }) {
                         : "border-transparent hover:border-gray-300 dark:hover:border-gray-600"
                     }`}
                   >
-                    <img
+                    <Image
                       src={image}
                       alt={`${listing.title} ${index + 1}`}
+                      width={500}
+                      height={500}
                       className="w-full h-full object-cover"
                     />
                   </button>
@@ -353,7 +361,9 @@ export default function ListingDetailClient({ listingId }) {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
                     <div className="font-semibold text-gray-900 dark:text-white truncate">
-                      <Link href={`/profile/${listing.seller_id}`}>{listing.seller_name}</Link>
+                      <Link href={`/profile/${listing.seller_id}`}>
+                        {listing.seller_name}
+                      </Link>
                     </div>
                     <Shield className="w-4 h-4 text-green-600 shrink-0" />
                   </div>
@@ -449,9 +459,7 @@ export default function ListingDetailClient({ listingId }) {
                       />
                     ) : (
                       <div
-                        className={`w-full h-full bg-linear-to-br ${
-                          gradientColors[gradientIndex]
-                        } dark:opacity-90`}
+                        className={`w-full h-full bg-linear-to-br ${gradientColors[gradientIndex]} dark:opacity-90`}
                       ></div>
                     )}
                     <div className="absolute top-2 right-2 bg-white dark:bg-gray-800 px-3 py-1 rounded-lg text-sm font-bold text-blue-900 dark:text-blue-400 shadow-sm">
