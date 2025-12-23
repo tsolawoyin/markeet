@@ -6,6 +6,9 @@ const nextConfig: NextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
+  images: {
+    domains: ["hlhtxibcdwnrdhwqlxri.supabase.co"],
+  },
   async headers() {
     return [
       {
