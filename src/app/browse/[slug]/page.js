@@ -214,7 +214,7 @@ export default function ListingDetailClient({ listingId }) {
                     className="w-full h-full object-cover"
                   /> */}
                   <Image
-                    src={item.images[selectedImage]}
+                    src={listing.images[selectedImage]}
                     alt={listing.title}
                     width={500}
                     height={500}
