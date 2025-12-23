@@ -209,10 +209,10 @@ export default function OnboardingPage() {
               You can adjust these settings anytime in your account preferences.
             </p>
             <Link
-              href="/browse"
+              href="/onboarding/install"
               className="inline-flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium transition-colors"
             >
-              Continue to Marketplace
+              Click here to continue
               <ArrowRight className="h-4 w-4" />
             </Link>
           </div>

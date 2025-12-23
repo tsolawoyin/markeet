@@ -75,11 +75,11 @@ export default function Shell({ children, supabase_user }) {
         <div
           className={`flex-1 ${
             user && currentPath != "/onboarding" && "pb-20"
-          } md:pb-0 dark:bg-slate-800`}
+          } md:pb-0 dark:bg-slate-950`}
         >
           {children}
         </div>
-        {user && currentPath != "/onboarding" && <Footer />}
+        {user && !currentPath.includes("onboarding") && <Footer />}
       </div>
     </ShellContext.Provider>
   );

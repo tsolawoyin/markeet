@@ -183,7 +183,7 @@ export default function SignupForm() {
 
         // Set user and redirect
         setUser(data.user);
-        router.push("/onboarding");
+        router.push("/onboarding/notification");
       } catch (error) {
         console.error("Signup error:", error);
         setError(error.message);
