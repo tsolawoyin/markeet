@@ -72,6 +72,8 @@ export default function SignupForm() {
     { value: "sultan-bello", label: "Sultan Bello Hall" },
     { value: "independence", label: "Great Independence Hall" },
     { value: "nnamdi-azikiwe", label: "Nnamdi Azikiwe Hall" },
+    // Mixed Halls
+    {value: "alexander-brown-hall", label: "Alexander Brown Hall (ABH)" },
     // Off Campus
     { value: "off-campus", label: "Off Campus" },
   ];
