@@ -108,8 +108,14 @@ export default function HomePage() {
         const { data, error, count } = await query;
         if (error) throw error;
 
+        // Filter out listings without images
+        const dataWithImages = data.filter(
+          (item) =>
+            item.images && Array.isArray(item.images) && item.images.length > 0
+        );
+
         // Sort: user's hall first
-        const sortedData = data.sort((a, b) => {
+        const sortedData = dataWithImages.sort((a, b) => {
           if (
             a.hall_of_residence === userHall &&
             b.hall_of_residence !== userHall
@@ -323,7 +329,13 @@ export default function HomePage() {
                           alt={item.title}
                           className="w-full h-full object-cover"
                         /> */}
-                        <Image src={item.images[0]} alt={item.title} width={500} height={500} className="w-full h-full object-cover"/>
+                        <Image
+                          src={item.images[0]}
+                          alt={item.title}
+                          width={500}
+                          height={500}
+                          className="w-full h-full object-cover"
+                        />
                         {/* Subtle overlay for better text visibility */}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-black/10"></div>
                       </>
