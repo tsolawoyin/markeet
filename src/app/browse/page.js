@@ -13,6 +13,7 @@ import {
   Package,
   Loader,
 } from "lucide-react";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
@@ -317,11 +318,12 @@ export default function HomePage() {
                   <div className="aspect-square rounded-t-xl relative overflow-hidden">
                     {item.images && item.images.length > 0 ? (
                       <>
-                        <img
+                        {/* <img
                           src={item.images[0]}
                           alt={item.title}
                           className="w-full h-full object-cover"
-                        />
+                        /> */}
+                        <Image src={item.images[0]} alt={item.title} width={200} height={200} className="w-full h-full object-cover"/>
                         {/* Subtle overlay for better text visibility */}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-black/10"></div>
                       </>

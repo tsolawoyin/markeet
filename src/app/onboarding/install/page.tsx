@@ -2,7 +2,14 @@
 
 import { useState, useEffect, useContext } from "react";
 import { ShellContext } from "@/shell/shell";
-import { Download, CheckCircle, ArrowRight, Smartphone, Monitor, AlertCircle } from "lucide-react";
+import {
+  Download,
+  CheckCircle,
+  ArrowRight,
+  Smartphone,
+  Monitor,
+  AlertCircle,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import Link from "next/link";
@@ -13,7 +20,9 @@ export default function Page() {
   const [isInstallable, setIsInstallable] = useState(false);
   const [isInstalled, setIsInstalled] = useState(false);
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
-  const [platform, setPlatform] = useState<"ios" | "android" | "desktop">("desktop");
+  const [platform, setPlatform] = useState<"ios" | "android" | "desktop">(
+    "desktop"
+  );
 
   useEffect(() => {
     // Detect platform
@@ -41,7 +50,10 @@ export default function Page() {
     window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
 
     return () => {
-      window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
+      window.removeEventListener(
+        "beforeinstallprompt",
+        handleBeforeInstallPrompt
+      );
     };
   }, []);
 
@@ -72,19 +84,25 @@ export default function Page() {
                 <span className="flex items-center justify-center w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400 font-semibold text-xs shrink-0">
                   1
                 </span>
-                <span>Tap the <strong>Share</strong> button at the bottom of Safari</span>
+                <span>
+                  Tap the <strong>Share</strong> button at the bottom of Safari
+                </span>
               </li>
               <li className="flex items-start gap-3">
                 <span className="flex items-center justify-center w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400 font-semibold text-xs shrink-0">
                   2
                 </span>
-                <span>Scroll down and tap <strong>"Add to Home Screen"</strong></span>
+                <span>
+                  Scroll down and tap <strong>"Add to Home Screen"</strong>
+                </span>
               </li>
               <li className="flex items-start gap-3">
                 <span className="flex items-center justify-center w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400 font-semibold text-xs shrink-0">
                   3
                 </span>
-                <span>Tap <strong>"Add"</strong> in the top right corner</span>
+                <span>
+                  Tap <strong>"Add"</strong> in the top right corner
+                </span>
               </li>
             </ol>
           </div>
@@ -100,19 +118,27 @@ export default function Page() {
                 <span className="flex items-center justify-center w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400 font-semibold text-xs shrink-0">
                   1
                 </span>
-                <span>Tap the <strong>menu</strong> (three dots) in Chrome</span>
+                <span>
+                  Tap the <strong>menu</strong> (three dots) in Chrome
+                </span>
               </li>
               <li className="flex items-start gap-3">
                 <span className="flex items-center justify-center w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400 font-semibold text-xs shrink-0">
                   2
                 </span>
-                <span>Select <strong>"Add to Home screen"</strong> or <strong>"Install app"</strong></span>
+                <span>
+                  Select <strong>"Add to Home screen"</strong> or{" "}
+                  <strong>"Install app"</strong>
+                </span>
               </li>
               <li className="flex items-start gap-3">
                 <span className="flex items-center justify-center w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400 font-semibold text-xs shrink-0">
                   3
                 </span>
-                <span>Confirm by tapping <strong>"Add"</strong> or <strong>"Install"</strong></span>
+                <span>
+                  Confirm by tapping <strong>"Add"</strong> or{" "}
+                  <strong>"Install"</strong>
+                </span>
               </li>
             </ol>
           </div>
@@ -128,13 +154,18 @@ export default function Page() {
                 <span className="flex items-center justify-center w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400 font-semibold text-xs shrink-0">
                   1
                 </span>
-                <span>Look for the <strong>install icon</strong> in your browser's address bar</span>
+                <span>
+                  Look for the <strong>install icon</strong> in your browser's
+                  address bar
+                </span>
               </li>
               <li className="flex items-start gap-3">
                 <span className="flex items-center justify-center w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400 font-semibold text-xs shrink-0">
                   2
                 </span>
-                <span>Click it and select <strong>"Install"</strong></span>
+                <span>
+                  Click it and select <strong>"Install"</strong>
+                </span>
               </li>
               <li className="flex items-start gap-3">
                 <span className="flex items-center justify-center w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400 font-semibold text-xs shrink-0">
@@ -189,7 +220,8 @@ export default function Page() {
                       Add to Home Screen
                     </h3>
                     <p className="text-sm text-muted-foreground mt-1">
-                      Access Markeet instantly like a native app with faster loading and offline support.
+                      Access Markeet instantly like a native app with faster
+                      loading and offline support.
                     </p>
                   </div>
                 </div>
