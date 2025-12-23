@@ -12,6 +12,8 @@ import {
   Home,
   Package,
   Loader,
+  Shirt,
+  Apple
 } from "lucide-react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
@@ -28,6 +30,8 @@ const categories = [
   { id: "textbooks", name: "Textbooks", icon: BookOpen },
   { id: "phones & laptops", name: "Phones & Laptops", icon: Laptop },
   { id: "hostel essentials", name: "Hostel Essentials", icon: Home },
+  { id: "food & groceries", name: "Food & Groceries", icon: Apple },
+  { id: "clothing & accessories", name: "Clothing & Accessories", icon: Shirt },
 ];
 
 // UI Halls of Residence
