@@ -31,6 +31,8 @@ const categories = [
   { id: "textbooks", name: "Textbooks" },
   { id: "phones & laptops", name: "Phones & Laptops" },
   { id: "hostel essentials", name: "Hostel Essentials" },
+  { id: "food & groceries", name: "Food & Groceries" },
+  { id: "clothing & accessories", name: "Clothing & Accessories" },
 ];
 
 const conditions = [
