@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useContext, useState, useEffect } from "react";
 import { ShellContext } from "@/shell/shell";
+import { useChatUpdates } from "../../app/chat-update-context";
 
 import {
   Item,
@@ -27,6 +28,9 @@ export default function ChatPage({}) {
   // nice one
   const { supabase, user } = useContext(ShellContext);
   const [chatListItems, setChatListItems] = useState([]);
+  const { latestMessage } = useChatUpdates(); // ✅ Listen to the "radio"
+  console.log(latestMessage);
+  const userId = user.id;
 
   function getDMRoomName(userId1, userId2) {
     const sorted = [userId1, userId2].sort();
@@ -45,6 +49,40 @@ export default function ChatPage({}) {
         console.log(err);
       });
   }, []);
+
+  // React to new messages
+  useEffect(() => {
+    if (!latestMessage) return;
+
+    console.log("New message detected:", latestMessage);
+
+    // Update the specific chat with the new message
+    setChatListItems((prevChats) => {
+      const updatedChats = prevChats.map((chat) => {
+        // Is this message for this chat?
+        if (chat.roomId === latestMessage.room_id) {
+          return {
+            ...chat,
+            lastMessage: {
+              id: latestMessage.id,
+              content: latestMessage.content,
+              createdAt: latestMessage.created_at,
+              userId: latestMessage.user_id,
+              isOwnMessage: latestMessage.user_id === userId,
+            },
+            updatedAt: new Date(latestMessage.created_at),
+          };
+        }
+        return chat;
+      });
+
+      // Sort: most recent chats first
+      return updatedChats.sort(
+        (a, b) =>
+          new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+      );
+    });
+  }, [latestMessage]);
 
   return (
     <div className="p-1">
@@ -106,10 +144,10 @@ export default function ChatPage({}) {
                 </ItemMedia>
 
                 <ItemContent className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between mb-1">
+                  <div className="flex items-center justify-between">
                     <ItemTitle
                       className={cn(
-                        "font-semibold truncate",
+                        "font-semibold truncate"
                         // isUnread ? "text-gray-900" : "text-gray-700"
                       )}
                     >
@@ -124,8 +162,8 @@ export default function ChatPage({}) {
 
                   <ItemDescription
                     className={cn(
-                      "text-sm truncate flex items-center gap-1",
-                    //   isUnread ? "font-medium text-gray-900" : "text-gray-500"
+                      "text-sm truncate flex items-center gap-1"
+                      //   isUnread ? "font-medium text-gray-900" : "text-gray-500"
                     )}
                   >
                     {lastMessage ? (

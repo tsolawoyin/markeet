@@ -8,6 +8,7 @@ import { Suspense } from "react";
 
 // Context
 import Shell from "@/shell/shell";
+import ChatUpdatesProvider from "./chat-update-context";
 import { ThemeProvider } from "@/components/theme-store";
 import PWAInstall from "@/components/pwa-install";
 import ServiceWorkerCleanup from "@/components/sw-cleanup";
@@ -63,7 +64,11 @@ const Dynamic = async ({ children }: any) => {
   //   return <p>We have problems verifying you. Please refresh.</p>
   // }
   // I don tire for all these rules and regulations.
-  return <Shell supabase_user={data}>{children}</Shell>;
+  return (
+    <Shell supabase_user={data}>
+      <ChatUpdatesProvider>{children}</ChatUpdatesProvider>
+    </Shell>
+  );
 };
 
 export default async function RootLayout({
