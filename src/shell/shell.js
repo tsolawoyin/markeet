@@ -66,21 +66,18 @@ export default function Shell({ children, supabase_user }) {
     };
   }, []); // nice and easy. thanks.
 
+  // I will adapt header and footer to different conditions as needed...
   return (
     <ShellContext.Provider
       value={{ user, setUser, supabase, currentPath, dexie }}
     >
-      <div className="w-full h-screen">
-        {/* {user && <Header />} */}
-        <div
-          className={`flex-1 ${
-            user && currentPath != "/onboarding" && "pb-20"
-          } md:pb-0 dark:bg-slate-950`}
-        >
-          {children}
-        </div>
-        {user && !currentPath.includes("onboarding") && <Footer />}
-      </div>
+      <div className="w-full h-screen dark:bg-slate-950">{children}</div>
     </ShellContext.Provider>
   );
 }
+// <div
+//   className={`${
+//     // user && currentPath != "/onboarding" && "pb-20"
+//   } md:pb-0`}
+// >
+// </div>
