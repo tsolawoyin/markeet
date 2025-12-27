@@ -9,7 +9,7 @@ import { ShellContext } from "@/shell/shell";
 
 // actions
 // we will only store single options...
-import { storeMessage, fetchMessage } from "./actions";
+import { storeMessage, fetchMessage, markRoomAsRead } from "./actions";
 
 // Sharp things...
 // Makes sense. Thank you.
@@ -19,7 +19,7 @@ export default function ChatInterface({ roomName }: { roomName: string }) {
   const secondUser = roomName
     .split("_")
     .filter((element) => element != user.id && element != "dm");
-  console.log(secondUser);
+  // console.log(secondUser);
   // Maybe I need to get the name of the second user...
   // Or what do you think???
   // const messages: ChatMessage[] = []; //
@@ -49,12 +49,22 @@ export default function ChatInterface({ roomName }: { roomName: string }) {
         }
       })
       .catch((error) => {
-        console.log(error, "hi")
+        console.log(error, "hi");
       });
   }, []);
 
+  // Mark as read when component mounts.
+  useEffect(() => {
+    // Mark as read when component mounts
+    const markAsRead = async () => {
+      await markRoomAsRead(supabase, roomName, user.id);
+    };
+
+    markAsRead();
+  }, [roomName]);
+
   return (
-    <div className="h-full">
+    <div className="h-screen">
       <RealtimeChat
         roomName={roomName}
         username={fullName}

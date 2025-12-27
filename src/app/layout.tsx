@@ -66,7 +66,11 @@ const Dynamic = async ({ children }: any) => {
   // I don tire for all these rules and regulations.
   return (
     <Shell supabase_user={data}>
-      <ChatUpdatesProvider>{children}</ChatUpdatesProvider>
+      {data.user ? (
+        <ChatUpdatesProvider>{children}</ChatUpdatesProvider>
+      ) : (
+        children
+      )}
     </Shell>
   );
 };

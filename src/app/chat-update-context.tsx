@@ -24,8 +24,8 @@ export default function ChatUpdatesProvider({
   const [roomIds, setRoomIds] = useState<string[]>([]);
   const [latestMessage, setLatestMessage] = useState<any | null>(null);
   const userId = user.id;
-  // This is where we'll set up the subscription
-  // (We'll implement this in the next step)
+
+
   // Step 1: Get user's room IDs
   useEffect(() => {
     const fetchRoomIds = async () => {
@@ -37,7 +37,7 @@ export default function ChatUpdatesProvider({
       if (data) {
         const ids = data.map((p) => p.room_id);
         setRoomIds(ids);
-        console.log("User is in these rooms:", ids);
+        // console.log("User is in these rooms:", ids);
       }
     };
 
@@ -50,7 +50,7 @@ export default function ChatUpdatesProvider({
   useEffect(() => {
     if (roomIds.length === 0) return;
 
-    console.log("Setting up subscription for rooms:", roomIds);
+    // console.log("Setting up subscription for rooms:", roomIds);
 
     const channel = supabase
       .channel("user-messages-channel")
@@ -64,7 +64,7 @@ export default function ChatUpdatesProvider({
         },
         (payload) => {
           const newMessage = payload.new;
-          console.log("New message received:", newMessage);
+          //   console.log("New message received:", newMessage);
           setLatestMessage(newMessage); // No need to check roomIds anymore
         }
       )

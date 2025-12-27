@@ -1,5 +1,5 @@
 "use client";
-// this is where the list of chats would be displayed
+
 import { useRouter } from "next/navigation";
 import { useContext, useState, useEffect } from "react";
 import { ShellContext } from "@/shell/shell";
@@ -17,25 +17,22 @@ import {
 } from "@/components/ui/item";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-
-import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 import { getUserChats, geUserChats } from "./action";
 
 import { cn } from "@/lib/utils";
+
+import Link from "next/link";
 
 export default function ChatPage({}) {
   // nice one
   const { supabase, user } = useContext(ShellContext);
   const [chatListItems, setChatListItems] = useState([]);
   const { latestMessage } = useChatUpdates(); // ✅ Listen to the "radio"
-  console.log(latestMessage);
+
   const userId = user.id;
 
-  function getDMRoomName(userId1, userId2) {
-    const sorted = [userId1, userId2].sort();
-    return `dm_${sorted[0]}_${sorted[1]}`;
-  }
   // This allows for some offline loading...
   // We can use indexedDB to cache chats for offline purposes.
   // Hmmm... That's cool...
@@ -54,7 +51,7 @@ export default function ChatPage({}) {
   useEffect(() => {
     if (!latestMessage) return;
 
-    console.log("New message detected:", latestMessage);
+    const isFromOtherUser = latestMessage.user_id != userId;
 
     // Update the specific chat with the new message
     setChatListItems((prevChats) => {
@@ -71,6 +68,9 @@ export default function ChatPage({}) {
               isOwnMessage: latestMessage.user_id === userId,
             },
             updatedAt: new Date(latestMessage.created_at),
+            unreadCount: isFromOtherUser
+              ? (chat.unreadCount || 0) + 1
+              : chat.unreadCount,
           };
         }
         return chat;
@@ -86,6 +86,9 @@ export default function ChatPage({}) {
 
   return (
     <div className="p-1">
+      <Link href={"/chat/find"}>
+        <Button variant={"outline"}>New Chat</Button>
+      </Link>
       {/* Only the UI is remaining. Smiles... */}
       {chatListItems?.map((chatListItem) => {
         const {
@@ -95,6 +98,7 @@ export default function ChatPage({}) {
           lastReadAt,
           lastMessage,
           updatedAt,
+          unreadCount,
         } = chatListItem;
         // Format timestamp
         const formatTime = (timestamp) => {
@@ -117,8 +121,6 @@ export default function ChatPage({}) {
         };
 
         // Check if message is unread
-        const isUnread =
-          lastMessage && new Date(lastMessage.createdAt) > new Date(lastReadAt);
 
         return (
           <li key={roomId} className="border-b last:border-b-0">
@@ -145,12 +147,7 @@ export default function ChatPage({}) {
 
                 <ItemContent className="flex-1 min-w-0">
                   <div className="flex items-center justify-between">
-                    <ItemTitle
-                      className={cn(
-                        "font-semibold truncate"
-                        // isUnread ? "text-gray-900" : "text-gray-700"
-                      )}
-                    >
+                    <ItemTitle className={cn("font-semibold truncate")}>
                       {otherParticipant?.fullName || "Unknown User"}
                     </ItemTitle>
                     {lastMessage && (
@@ -161,10 +158,7 @@ export default function ChatPage({}) {
                   </div>
 
                   <ItemDescription
-                    className={cn(
-                      "text-sm truncate flex items-center gap-1"
-                      //   isUnread ? "font-medium text-gray-900" : "text-gray-500"
-                    )}
+                    className={cn("text-sm truncate flex items-center gap-1")}
                   >
                     {lastMessage ? (
                       <>
@@ -182,8 +176,10 @@ export default function ChatPage({}) {
                 </ItemContent>
 
                 <ItemActions className="flex items-center">
-                  {isUnread && (
-                    <div className="w-2.5 h-2.5 bg-blue-500 rounded-full" />
+                  {unreadCount > 0 && (
+                    <div className="bg-blue-500 text-white text-xs font-bold rounded-full min-w-5 h-5 flex items-center justify-center px-1.5">
+                      {unreadCount > 99 ? "99+" : unreadCount}
+                    </div>
                   )}
                 </ItemActions>
               </Item>

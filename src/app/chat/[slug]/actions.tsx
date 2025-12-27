@@ -1,5 +1,6 @@
 import { createClient } from "@/utils/supabase/client";
 import type { ChatMessage } from "@/hooks/use-realtime-chat";
+import { SupabaseClient } from "@supabase/supabase-js";
 
 interface StoreMessagesOptions {
   roomName: string;
@@ -34,7 +35,7 @@ export async function storeMessages(
         .from("rooms")
         .insert({
           name: roomName,
-        //   type: roomType, // we don't need this
+          //   type: roomType, // we don't need this
         })
         .select("*")
         .single();
@@ -173,3 +174,32 @@ export const fetchMessage = async (roomName: string) => {
     createdAt: m.created_at,
   }));
 };
+
+export async function markRoomAsRead(
+  supabase: SupabaseClient,
+  roomName: string,
+  userId: string
+) {
+  const { data, error: roomError } = await supabase
+    .from("rooms")
+    .select("id")
+    .eq("name", roomName)
+    .single();
+
+  if (roomError) {
+    console.error("Error fetching room id");
+  }
+
+  if (data) {
+    const { error } = await supabase
+      .from("room_participants")
+      .update({ last_read_at: new Date().toISOString() })
+      .eq("room_id", data.id)
+      .eq("user_id", userId);
+
+    if (error) {
+      console.error("Error marking room as read:", error);
+      throw error;
+    }
+  }
+}

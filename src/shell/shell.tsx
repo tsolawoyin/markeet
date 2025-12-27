@@ -1,32 +1,56 @@
 "use client";
 
 // React
-import { createContext, useState, useEffect } from "react";
+import {
+  createContext,
+  useState,
+  useEffect,
+  ReactNode,
+  useContext,
+  Dispatch,
+  SetStateAction,
+} from "react";
 
 // Next
 import { usePathname, useRouter } from "next/navigation";
 
 // Supabase
 import { createClient } from "@/utils/supabase/client";
+import { SupabaseClient, User } from "@supabase/supabase-js";
 
 // Dexie
 import { db } from "./shell-local-db";
 
-import Header from "@/components/header/header";
+// Types
+interface ShellContextType {
+  user: User | null;
+  setUser: Dispatch<SetStateAction<User | null>>;
+  supabase: SupabaseClient;
+  currentPath: string;
+  dexie: typeof db;
+}
+
+interface ShellProps {
+  children: ReactNode;
+  supabase_user: {
+    user: User | null;
+  };
+}
+
+// Component
 import Footer from "@/components/footer/footer";
 
-export const ShellContext = createContext();
+export const ShellContext = createContext<ShellContextType | null>(null);
 
-export default function Shell({ children, supabase_user }) {
+export default function Shell({ children, supabase_user }: ShellProps) {
   // Initialize supabase client for some useful things
   const supabase = createClient();
+
   // IndexedDB Storage
   const dexie = db;
-  // Database functions
-  //   const supabase_tables_fn = supabase_db_utility_fn(supabase);
-  // Utility functions
+
   // Set user to user from server
-  const [user, setUser] = useState(supabase_user.user);
+  const [user, setUser] = useState<User | null>(supabase_user.user);
 
   // NEXT.js Hooks
   const currentPath = usePathname();
@@ -71,13 +95,18 @@ export default function Shell({ children, supabase_user }) {
     <ShellContext.Provider
       value={{ user, setUser, supabase, currentPath, dexie }}
     >
-      <div className="w-full h-screen dark:bg-slate-950">{children}</div>
+      <div className="w-full min-h-screen dark:bg-slate-950">{children}</div>
+      <Footer />
     </ShellContext.Provider>
   );
 }
-// <div
-//   className={`${
-//     // user && currentPath != "/onboarding" && "pb-20"
-//   } md:pb-0`}
-// >
-// </div>
+
+export function useShell() {
+  const context = useContext(ShellContext);
+
+  if (!context) {
+    throw new Error("useShell must be used within Shell component");
+  }
+
+  return context;
+}

@@ -23,7 +23,7 @@ export interface ChatListItem {
     userId: string;
     isOwnMessage: boolean;
   };
-  //   unreadCount: number;
+  unreadCount: number;
 }
 
 interface Participation {
@@ -128,6 +128,14 @@ export async function getUserChats(supabase: any, userId: string) {
           room.name.startsWith("dm") &&
           participants.find((p: any) => p.id !== userId);
 
+        // Calculate unread count
+        const { count: unreadCount } = await supabase
+          .from("messages")
+          .select("*", { count: "exact", head: true })
+          .eq("room_id", room.id)
+          .neq("user_id", userId) // Don't count own messages
+          .gt("created_at", participation.last_read_at);
+
         // console.log(otherParticipant);
         const chatListItem: ChatListItem = {
           roomId: room.id,
@@ -145,12 +153,13 @@ export async function getUserChats(supabase: any, userId: string) {
                 isOwnMessage: lastMessage.user_id === userId,
               }
             : undefined,
-          // unreadCount: unreadCount || 0, // to be fixed later
+          unreadCount: unreadCount || 0, // to be fixed later
         };
+
+        console.log(chatListItem);
 
         return chatListItem;
       }
-      // console.log(allPart)
     );
 
     const chatList = await Promise.all(chatListPromises);
@@ -161,97 +170,8 @@ export async function getUserChats(supabase: any, userId: string) {
       const bTime = b.lastMessage?.createdAt || b.updatedAt;
       return new Date(bTime).getTime() - new Date(aTime).getTime();
     });
-    //       // Calculate unread count
-    //       const { count: unreadCount } = await supabase
-    //         .from("messages")
-    //         .select("*", { count: "exact", head: true })
-    //         .eq("room_id", roomId)
-    //         .neq("user_id", userId) // Don't count own messages
-    //         .gt("created_at", participation.last_read_at);
-
-    //       // Format participants
-    //       // Format participants - handle the profile object correctly
-    //       const participants =
-    //         allParticipants?.map((p) => ({
-    //           id: p.profiles?.id || p.user_id,
-    //           username: p.profiles?.username || "",
-    //           fullName: p.profiles?.full_name || "",
-    //           avatarUrl: p.profiles?.avatar_url || "",
-    //         })) || [];
-
-    //       // For DMs, find the other participant
-    //       const otherParticipant =
-    //         room.type === "dm"
-    //           ? participants.find((p) => p.id !== userId)
-    //           : undefined;
-
-    //       const chatListItem: ChatListItem = {
-    //         roomId: room.id,
-    //         roomName: room.name,
-    //         roomType: room.type,
-    //         lastReadAt: participation.last_read_at,
-    //         updatedAt: room.updated_at,
-    //         otherParticipant,
-    //         participants: room.type === "group" ? participants : undefined,
-    //         lastMessage: lastMessage
-    //           ? {
-    //               id: lastMessage.id,
-    //               content: lastMessage.content,
-    //               createdAt: lastMessage.created_at,
-    //               userId: lastMessage.user_id,
-    //               isOwnMessage: lastMessage.user_id === userId,
-    //             }
-    //           : undefined,
-    //         unreadCount: unreadCount || 0,
-    //       };
-
-    //       return chatListItem;
-    //     });
-
-    //     const chatList = await Promise.all(chatListPromises);
-
-    //     // Sort by most recent activity (rooms with latest messages first)
-    //     return chatList.sort((a, b) => {
-    //       const aTime = a.lastMessage?.createdAt || a.updatedAt;
-    //       const bTime = b.lastMessage?.createdAt || b.updatedAt;
-    //       return new Date(bTime).getTime() - new Date(aTime).getTime();
-    //     });
   } catch (error) {
     console.error("Error getting user chats:", error);
     return [];
   }
 }
-
-// // Optional: Hook version for React components
-// export function useUserChats(userId: string) {
-//   const [chats, setChats] = React.useState<ChatListItem[]>([]);
-//   const [loading, setLoading] = React.useState(true);
-//   const [error, setError] = React.useState<Error | null>(null);
-
-//   React.useEffect(() => {
-//     const loadChats = async () => {
-//       try {
-//         setLoading(true);
-//         const chatList = await getUserChats(userId);
-//         setChats(chatList);
-//       } catch (err) {
-//         setError(err as Error);
-//       } finally {
-//         setLoading(false);
-//       }
-//     };
-
-//     if (userId) {
-//       loadChats();
-//     }
-//   }, [userId]);
-
-//   const refetch = React.useCallback(async () => {
-//     if (userId) {
-//       const chatList = await getUserChats(userId);
-//       setChats(chatList);
-//     }
-//   }, [userId]);
-
-//   return { chats, loading, error, refetch };
-// }
