@@ -14,7 +14,7 @@ const navigationItems = [
 
 export default function Footer() {
   const pathname = usePathname();
-  const hidden = pathname.match(/\/chat\/\w+/);
+  const hidden = pathname.match(/\/chat\/\w+/) || pathname == "/post";
 
   if (hidden) return null;
 
