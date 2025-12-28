@@ -16,6 +16,7 @@ import {
   Loader,
   Circle,
   Plus,
+  X,
 } from "lucide-react";
 import { IconPlus } from "@tabler/icons-react";
 
@@ -43,10 +44,12 @@ import { useShell } from "@/shell/shell";
 
 import { v4 } from "uuid";
 
+import Image from "next/image";
+
 interface Question {
   id: string;
   question: string;
-  vote: number; // for now
+  vote: number;
 }
 
 interface Poll {
@@ -65,28 +68,19 @@ interface Post {
   comments: number;
   boosts: number;
   favorites: number;
-  createdBy: string; // user_id
-  // we will create a different table for those ones
+  createdBy: string;
+  createdAt: string;
 }
 
 export default function Page() {
   const { supabase, user } = useShell();
   const [text, setText] = useState<string>("");
-  const [poll, setPoll] = useImmer<Poll | undefined>(undefined); // can be null to start with
+  const [poll, setPoll] = useImmer<Poll | undefined>(undefined);
+  const [images, setImages] = useState<string[]>([]);
+  const [uploading, setUploading] = useState(false);
+  const [posting, setPosting] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const [post, setPost] = useState<Post>({
-    id: v4(),
-    content: text,
-    poll: poll,
-    images: [],
-    privacy: "public",
-    comments: 0,
-    boosts: 0,
-    favorites: 0,
-    createdBy: !user && user.id
-  });
-
-  // we can only have one pool per post...
   const templatePool: Poll = {
     id: v4(),
     questions: [
@@ -98,6 +92,7 @@ export default function Page() {
   };
 
   const maxCount = 500;
+  const maxImages = 4;
 
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
@@ -107,14 +102,93 @@ export default function Page() {
     }
   }, []);
 
-  // cloud will handle this one later...
-  const handleImageUpload = async () => {};
+  const handleImageUpload = async (e: ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
 
-  const togglePoll = () => (!poll ? setPoll(templatePool) : setPoll(undefined));
+    const remainingSlots = maxImages - images.length;
+    if (remainingSlots <= 0) return;
 
-  useEffect(() => {
-    console.log(poll);
-  }, [poll]);
+    setUploading(true);
+
+    try {
+      const filesToUpload = Array.from(files).slice(0, remainingSlots);
+      const uploadPromises = filesToUpload.map(async (file) => {
+        const fileExt = file.name.split(".").pop();
+        const fileName = `${v4()}.${fileExt}`;
+        const filePath = `${user?.id}/${fileName}`;
+
+        const { error: uploadError } = await supabase.storage
+          .from("post-images")
+          .upload(filePath, file);
+
+        if (uploadError) throw uploadError;
+
+        const { data } = supabase.storage
+          .from("post-images")
+          .getPublicUrl(filePath);
+
+        return data.publicUrl;
+      });
+
+      const uploadedUrls = await Promise.all(uploadPromises);
+      setImages((prev) => [...prev, ...uploadedUrls]);
+    } catch (error) {
+      console.error("Error uploading images:", error);
+    } finally {
+      setUploading(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+    }
+  };
+
+  const removeImage = (index: number) => {
+    setImages((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const togglePoll = () => {
+    if (!poll) {
+      setPoll(templatePool);
+      setImages([]);
+    } else {
+      setPoll(undefined);
+    }
+  };
+
+  const handlePost = async () => {
+    if (!text.trim() && images.length === 0) return;
+
+    setPosting(true);
+
+    try {
+      const postData: Post = {
+        id: v4(),
+        content: text,
+        poll: poll,
+        images: images,
+        privacy: "public",
+        comments: 0,
+        boosts: 0,
+        favorites: 0,
+        createdBy: user?.id || "",
+        createdAt: new Date().toISOString(),
+      };
+
+      const { error } = await supabase.from("posts").insert([postData]);
+
+      if (error) throw error;
+
+      // Reset form
+      setText("");
+      setImages([]);
+      setPoll(undefined);
+    } catch (error) {
+      console.error("Error creating post:", error);
+    } finally {
+      setPosting(false);
+    }
+  };
 
   return (
     <div className="p-3 grid gap-4">
@@ -124,7 +198,7 @@ export default function Page() {
           avatarUrl: user?.user_metadata.avatar_url,
           username: user?.user_metadata.username,
         }}
-      ></ItemAvatar>
+      />
       <InputGroup className="outline-none border-none focus:outline-none focus:border-none">
         <InputGroupTextarea
           placeholder="Share your thought, promote your product, or ask questions."
@@ -143,23 +217,34 @@ export default function Page() {
           </InputGroupButton>
           <InputGroupButton variant={"outline"}>English</InputGroupButton>
         </InputGroupAddon>
-        {poll && <Pool poll={poll} setPoll={setPoll} />}
+
+        {poll && <PollInt poll={poll} setPoll={setPoll} />}
+
+        {images.length > 0 && !poll && (
+          <ImagePreview images={images} onRemove={removeImage} />
+        )}
+
         <InputGroupAddon align="block-end">
+          <input
+            type="file"
+            ref={fileInputRef}
+            className="hidden"
+            accept="image/*"
+            multiple
+            onChange={handleImageUpload}
+          />
           <InputGroupButton
-            // variant="outline"
-            // className="rounded-full"
             size="icon-xs"
-            disabled={!!poll}
+            disabled={!!poll || images.length >= maxImages || uploading}
+            onClick={() => fileInputRef.current?.click()}
           >
-            {/* <IconPlus /> */}
-            <ImageUp />
+            {uploading ? <Loader className="animate-spin" /> : <ImageUp />}
           </InputGroupButton>
           <InputGroupButton
-            // that's manageable for now. shey you get
-            // that's cool. thanks...
             variant={`${poll ? "default" : "outline"}`}
             size={"icon-xs"}
             onClick={togglePoll}
+            disabled={images.length > 0}
           >
             <ChartNoAxesColumn />
           </InputGroupButton>
@@ -170,10 +255,10 @@ export default function Page() {
           <InputGroupButton
             variant="default"
             className="w-25"
-            disabled={!text.length}
+            disabled={(!text.length && images.length === 0) || posting}
+            onClick={handlePost}
           >
-            <span>Post</span>
-            {/* <Loader className="animate-spin" /> */}
+            {posting ? <Loader className="animate-spin" /> : <span>Post</span>}
           </InputGroupButton>
         </InputGroupAddon>
       </InputGroup>
@@ -181,7 +266,51 @@ export default function Page() {
   );
 }
 
-function Pool({
+function ImagePreview({
+  images,
+  onRemove,
+}: {
+  images: string[];
+  onRemove: (index: number) => void;
+}) {
+  const gridClass =
+    images.length === 1
+      ? "grid-cols-1"
+      : images.length === 2
+      ? "grid-cols-2"
+      : images.length === 3
+      ? "grid-cols-3"
+      : "grid-cols-2";
+
+  return (
+    <div className={`grid ${gridClass} gap-2 w-full px-2 pb-4`}>
+      {images.map((url, index) => (
+        <div key={index} className="relative group aspect-square">
+          {/* <img
+            src={url}
+            alt={`Upload ${index + 1}`}
+            className="w-full h-full object-cover rounded-lg"
+          /> */}
+          <Image
+            src={url}
+            alt={`Upload ${index + 1}`}
+            className="w-full h-full object-cover rounded-lg"
+            width={300}
+            height={300}
+          />
+          <button
+            onClick={() => onRemove(index)}
+            className="absolute top-2 right-2 bg-black/60 hover:bg-black/80 rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+          >
+            <X className="w-4 h-4 text-white" />
+          </button>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function PollInt({
   poll,
   setPoll,
 }: {
@@ -189,16 +318,15 @@ function Pool({
   setPoll: Updater<Poll | undefined>;
 }) {
   const [questions, setQuestions] = useImmer<Question[]>(poll.questions);
-  // I need to maintain a private state for the questions themselves first
+
   useEffect(() => {
-    // when questions changes, we update it inside pool
     setPoll((draft) => {
       if (draft) {
         draft.questions = questions;
       }
     });
-  }, [questions]);
-  // I will work on it later. Don't worry. It will be perfect on the long run....
+  }, [questions, setPoll]);
+
   const handleQuestions = (
     event: ChangeEvent<HTMLInputElement>,
     question: Question,
@@ -207,12 +335,9 @@ function Pool({
     let value = event.target.value;
     let MAX_COUNT = 50;
 
-    // nice and easy. makes sense. cool. thank God.
     setQuestions((draft) => {
-      // sharp
-      const currQuestion = draft.find((q) => q.id == question.id);
-      // console.log(currQuestion)
-      // console.log(value.length);
+      const currQuestion = draft.find((q) => q.id === question.id);
+
       if (currQuestion && value.length <= MAX_COUNT) {
         currQuestion.question = value;
         if (posn > 1 && posn < 4 && draft.length <= posn) {
@@ -220,14 +345,13 @@ function Pool({
         }
       }
 
-      if (currQuestion && value.length == 0) {
-        draft.filter((q) => q.id != currQuestion.id);
+      if (currQuestion && value.length === 0 && draft.length > 2) {
+        draft.filter((q) => q.id !== currQuestion.id);
       }
     });
   };
 
   return (
-    // sharp
     <div className="grid gap-3 w-full px-2 pb-4">
       <ul className="grid gap-3">
         {questions.map((question, index) => {
@@ -250,8 +374,6 @@ function Pool({
       <div className="flex justify-around text-gray-400">
         <div>
           <p className="text-xs">Poll duration</p>
-          {/* <p>{poll.duration}</p>
-           */}
           <select
             className="appearance-none text-blue-400 outline-none"
             onChange={(event) => {
@@ -274,13 +396,12 @@ function Pool({
         </div>
         <div>
           <p className="text-xs">Style</p>
-          {/* <p>{capitalize(poll.style)} choice</p> */}
           <select
             className="appearance-none outline-none text-blue-400"
             onChange={(event) => {
               setPoll((draft) => {
                 let value = event.target.value;
-                if (value == "single" || value == "multiple") {
+                if (value === "single" || value === "multiple") {
                   if (draft) {
                     draft.style = value;
                   }
@@ -319,16 +440,6 @@ export function ItemAvatar({ user }: { user: User }) {
           <ItemTitle>{user.fullName}</ItemTitle>
           <ItemDescription>@{user.username || "star"}</ItemDescription>
         </ItemContent>
-        {/* <ItemActions>
-          <Button
-            size="icon-sm"
-            variant="outline"
-            className="rounded-full"
-            aria-label="Invite"
-          >
-            <Plus />
-          </Button>
-        </ItemActions> */}
       </Item>
     </div>
   );
