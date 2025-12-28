@@ -2,7 +2,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState } from "react";
-import { ShellContext } from "@/shell/shell";
+import { useShell } from "@/shell/shell";
 
 // This defines what data our context will provide
 interface ChatUpdatesContextType {
@@ -20,10 +20,10 @@ export default function ChatUpdatesProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const { supabase, user } = useContext(ShellContext);
+  const { supabase, user } = useShell();
   const [roomIds, setRoomIds] = useState<string[]>([]);
   const [latestMessage, setLatestMessage] = useState<any | null>(null);
-  const userId = user.id;
+  const userId = user && user.id;
 
 
   // Step 1: Get user's room IDs
