@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useContext, useState, useEffect } from "react";
 import { ShellContext } from "@/shell/shell";
+import { useShell } from "@/shell/shell";
 import { useChatUpdates } from "../../app/chat-update-context";
 
 import {
@@ -27,11 +28,12 @@ import Link from "next/link";
 
 export default function ChatPage({}) {
   // nice one
-  const { supabase, user } = useContext(ShellContext);
+  const { supabase, user, setUser } = useShell();
   const [chatListItems, setChatListItems] = useState([]);
   const { latestMessage } = useChatUpdates(); // ✅ Listen to the "radio"
 
   const userId = user.id;
+  const router = useRouter(); // sharp
 
   // This allows for some offline loading...
   // We can use indexedDB to cache chats for offline purposes.
@@ -89,6 +91,12 @@ export default function ChatPage({}) {
       <Link href={"/chat/find"}>
         <Button variant={"outline"}>New Chat</Button>
       </Link>
+      {/* <Button variant={"outline"} onClick={async () => {
+        await supabase.auth.signOut();
+        router.push("/login");
+      }}>
+        Sign out
+      </Button> */}
       {/* Only the UI is remaining. Smiles... */}
       {chatListItems?.map((chatListItem) => {
         const {

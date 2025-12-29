@@ -10,6 +10,29 @@ import {
 } from "@/components/ui/input-group";
 
 import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@/components/ui/drawer";
+
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+
+import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button";
+
+import {
   ArrowUpIcon,
   ImageUp,
   ChartNoAxesColumn,
@@ -17,11 +40,13 @@ import {
   Circle,
   Plus,
   X,
+  ChevronsUpDown,
+  LockKeyhole,
+  Globe,
+  Moon,
 } from "lucide-react";
 import { IconPlus } from "@tabler/icons-react";
 
-import { Separator } from "@/components/ui/separator";
-import { Button } from "@/components/ui/button";
 import { capitalize, size } from "lodash";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -45,6 +70,7 @@ import { useShell } from "@/shell/shell";
 import { v4 } from "uuid";
 
 import Image from "next/image";
+import { Select } from "@/components/ui/select";
 
 interface Question {
   id: string;
@@ -62,7 +88,6 @@ interface Poll {
 interface Post {
   id: string;
   content: string;
-  poll?: Poll;
   images?: string[];
   privacy: "public" | "private";
   comments: number;
@@ -81,18 +106,23 @@ export default function Page() {
   const [posting, setPosting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const maxCount = 500;
+  const maxImages = 4;
+
+  // privacy
+  const [privacy, setPrivacy] = useState<"public" | "private">("public");
+
+  const POST_ID = v4();
+
   const templatePool: Poll = {
     id: v4(),
     questions: [
       { id: v4(), question: "", vote: 0 },
       { id: v4(), question: "", vote: 0 },
     ],
-    duration: "0:1:0",
+    duration: "1 day",
     style: "single",
   };
-
-  const maxCount = 500;
-  const maxImages = 4;
 
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
@@ -115,7 +145,8 @@ export default function Page() {
       const filesToUpload = Array.from(files).slice(0, remainingSlots);
       const uploadPromises = filesToUpload.map(async (file) => {
         const fileExt = file.name.split(".").pop();
-        const fileName = `${v4()}.${fileExt}`;
+        // how to retrieve image from a particular post
+        const fileName = `${POST_ID}.${fileExt}`;
         const filePath = `${user?.id}/${fileName}`;
 
         const { error: uploadError } = await supabase.storage
@@ -161,30 +192,79 @@ export default function Page() {
 
     setPosting(true);
 
+    let postInserted = false;
+    let pollInserted = false;
+
     try {
-      const postData: Post = {
-        id: v4(),
+      const postData = {
+        id: POST_ID,
         content: text,
-        poll: poll,
         images: images,
-        privacy: "public",
+        privacy: privacy,
         comments: 0,
         boosts: 0,
         favorites: 0,
-        createdBy: user?.id || "",
-        createdAt: new Date().toISOString(),
+        created_by: user?.id || "", // sharp
+        created_at: new Date().toISOString(),
       };
 
-      const { error } = await supabase.from("posts").insert([postData]);
+      const { error: postError } = await supabase
+        .from("posts")
+        .insert([postData]);
 
-      if (error) throw error;
+      if (postError) throw postError;
+      postInserted = true;
 
-      // Reset form
+      if (poll) {
+        const pollData = {
+          id: poll.id,
+          post_id: POST_ID,
+          duration: poll.duration,
+          style: poll.style,
+        };
+
+        const { error: pollError } = await supabase
+          .from("polls")
+          .insert([pollData]);
+
+        if (pollError) throw pollError;
+        pollInserted = true;
+
+        const questionsData = poll.questions
+          .filter((q) => q.question.trim())
+          .map((q) => ({
+            id: q.id,
+            poll_id: poll.id,
+            question: q.question,
+            vote: q.vote,
+          }));
+
+        const { error: questionsError } = await supabase
+          .from("poll_questions")
+          .insert(questionsData);
+
+        if (questionsError) throw questionsError;
+      }
+      // so the behavior is that after successful upload, user is redirect to home
+      // sharp...
+
       setText("");
       setImages([]);
       setPoll(undefined);
+
+      // Redirect here... sharp. Makes
     } catch (error) {
       console.error("Error creating post:", error);
+
+      if (pollInserted) {
+        await supabase.from("polls").delete().eq("id", poll?.id);
+      }
+
+      if (postInserted) {
+        await supabase.from("posts").delete().eq("id", POST_ID);
+      }
+
+      alert("Failed to create post. Please try again.");
     } finally {
       setPosting(false);
     }
@@ -199,69 +279,78 @@ export default function Page() {
           username: user?.user_metadata.username,
         }}
       />
-      <InputGroup className="outline-none border-none focus:outline-none focus:border-none">
-        <InputGroupTextarea
-          placeholder="Share your thought, promote your product, or ask questions."
-          value={text}
-          ref={inputRef}
-          className="min-h-25 pl-4"
-          onChange={(ev) => {
-            let newVal = ev.target.value;
-            if (newVal.length <= maxCount) setText(newVal);
-            else if (newVal.length > maxCount) return;
-          }}
-        />
-        <InputGroupAddon align={"block-start"}>
-          <InputGroupButton variant={"outline"}>
-            Public, anyone can quote
-          </InputGroupButton>
-          <InputGroupButton variant={"outline"}>English</InputGroupButton>
-        </InputGroupAddon>
-
-        {poll && <PollInt poll={poll} setPoll={setPoll} />}
-
-        {images.length > 0 && !poll && (
-          <ImagePreview images={images} onRemove={removeImage} />
-        )}
-
-        <InputGroupAddon align="block-end">
-          <input
-            type="file"
-            ref={fileInputRef}
-            className="hidden"
-            accept="image/*"
-            multiple
-            onChange={handleImageUpload}
+      <Drawer>
+        <InputGroup className="outline-none border-none focus:outline-none focus:border-none">
+          <InputGroupTextarea
+            placeholder="Share your thought, promote your product, or ask questions."
+            value={text}
+            ref={inputRef}
+            className="min-h-25 pl-4"
+            onChange={(ev) => {
+              let newVal = ev.target.value;
+              if (newVal.length <= maxCount) setText(newVal);
+              else if (newVal.length > maxCount) return;
+            }}
           />
-          <InputGroupButton
-            size="icon-xs"
-            disabled={!!poll || images.length >= maxImages || uploading}
-            onClick={() => fileInputRef.current?.click()}
-          >
-            {uploading ? <Loader className="animate-spin" /> : <ImageUp />}
-          </InputGroupButton>
-          <InputGroupButton
-            variant={`${poll ? "default" : "outline"}`}
-            size={"icon-xs"}
-            onClick={togglePoll}
-            disabled={images.length > 0}
-          >
-            <ChartNoAxesColumn />
-          </InputGroupButton>
-          <InputGroupText className="ml-auto">
-            {maxCount - text?.length}
-          </InputGroupText>
-          <Separator orientation="vertical" className="h-4!" />
-          <InputGroupButton
-            variant="default"
-            className="w-25"
-            disabled={(!text.length && images.length === 0) || posting}
-            onClick={handlePost}
-          >
-            {posting ? <Loader className="animate-spin" /> : <span>Post</span>}
-          </InputGroupButton>
-        </InputGroupAddon>
-      </InputGroup>
+          <InputGroupAddon align={"block-start"}>
+            <DrawerTrigger>
+              <InputGroupButton className="text-blue-500" variant={"outline"}>
+                {capitalize(privacy)}
+              </InputGroupButton>
+            </DrawerTrigger>
+            <InputGroupButton variant={"outline"}>English</InputGroupButton>
+          </InputGroupAddon>
+
+          {poll && <PollInt poll={poll} setPoll={setPoll} />}
+
+          {images.length > 0 && !poll && (
+            <ImagePreview images={images} onRemove={removeImage} />
+          )}
+
+          <InputGroupAddon align="block-end">
+            <input
+              type="file"
+              ref={fileInputRef}
+              className="hidden"
+              accept="image/*"
+              multiple
+              onChange={handleImageUpload}
+            />
+            <InputGroupButton
+              size="icon-xs"
+              disabled={!!poll || images.length >= maxImages || uploading}
+              onClick={() => fileInputRef.current?.click()}
+            >
+              {uploading ? <Loader className="animate-spin" /> : <ImageUp />}
+            </InputGroupButton>
+            <InputGroupButton
+              variant={`${poll ? "default" : "outline"}`}
+              size={"icon-xs"}
+              onClick={togglePoll}
+              disabled={images.length > 0}
+            >
+              <ChartNoAxesColumn />
+            </InputGroupButton>
+            <InputGroupText className="ml-auto">
+              {maxCount - text?.length}
+            </InputGroupText>
+            <Separator orientation="vertical" className="h-4!" />
+            <InputGroupButton
+              variant="default"
+              className="w-25"
+              disabled={(!text.length && images.length === 0) || posting}
+              onClick={handlePost}
+            >
+              {posting ? (
+                <Loader className="animate-spin" />
+              ) : (
+                <span>Post</span>
+              )}
+            </InputGroupButton>
+          </InputGroupAddon>
+        </InputGroup>
+        <DrawerTab privacy={privacy} setPrivacy={setPrivacy} />
+      </Drawer>
     </div>
   );
 }
@@ -300,9 +389,10 @@ function ImagePreview({
           />
           <button
             onClick={() => onRemove(index)}
-            className="absolute top-2 right-2 bg-black/60 hover:bg-black/80 rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+            className="absolute top-2 left-2 bg-black/60 hover:bg-black/80 rounded-full p-1  group-hover:opacity-100 transition-opacity"
           >
-            <X className="w-4 h-4 text-white" />
+            <X className="w-4 h-4" />
+            {/* Remove */}
           </button>
         </div>
       ))}
@@ -384,14 +474,16 @@ function PollInt({
               });
             }}
           >
-            <option value="0:0:5">5 minutes</option>
-            <option value="0:0:30">30 minutes</option>
-            <option value="0:1:0">1 hour</option>
-            <option value="0:6:0">6 hours</option>
-            <option value="0:12:0">12 hours</option>
-            <option value="1:0:0">1 day</option>
-            <option value="3:0:0">3 days</option>
-            <option value="7:0:0">7 days</option>
+            <option value="5 minutes">5 minutes</option>
+            <option value="30 minutes">30 minutes</option>
+            <option value="1 hour">1 hour</option>
+            <option value="6 hours">6 hours</option>
+            <option value="12 hours">12 hours</option>
+            <option value="1 day" selected>
+              1 day
+            </option>
+            <option value="3 days">3 days</option>
+            <option value="7 days">7 days</option>
           </select>
         </div>
         <div>
@@ -442,5 +534,87 @@ export function ItemAvatar({ user }: { user: User }) {
         </ItemContent>
       </Item>
     </div>
+  );
+}
+
+function DrawerTab({ privacy, setPrivacy }: { privacy: any; setPrivacy: any }) {
+  return (
+    <DrawerContent>
+      <DrawerHeader className="text-left">
+        <DrawerTitle className="text-left w-full pb-4 mb-7 border-b">
+          Visibility and interaction
+        </DrawerTitle>
+        {/* <Separator /> */}
+        <DrawerDescription className="text-left">
+          Control who can interact with this post.
+        </DrawerDescription>
+      </DrawerHeader>
+      <div className="p-3 w-full">
+        <DropdownMenu>
+          <p className="mb-3 px-1">Visibility</p>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant={"outline"}
+              className="w-full flex justify-between p-6"
+            >
+              <span className="text-sm font-medium">{capitalize(privacy)}</span>
+              <ChevronsUpDown className="h-4 w-4 shrink-0 opacity-50" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="dark:bg-slate-950 border-0 w-screen px-3">
+            <DropdownMenuItem
+              className={`flex items-center gap-4 ${
+                privacy == "public" && "bg-indigo-800"
+              }`}
+            >
+              <Globe color="white" />
+              <div
+                className="flex flex-col gap-1 w-full"
+                onClick={() => {
+                  setPrivacy("public");
+                }}
+              >
+                <span className="text-sm font-medium">Public</span>
+                <span className="">Anyone on and off</span>
+              </div>
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              className={`flex items-center gap-4 ${
+                privacy == "private" && "bg-indigo-800"
+              }`}
+            >
+              {/* <Moon color="white" /> */}
+              <LockKeyhole color="white" />
+              <div
+                className="flex flex-col gap-1 w-full"
+                onClick={() => {
+                  console.log("hello");
+                  setPrivacy("private");
+                }}
+              >
+                <span className="text-sm font-medium">Private</span>
+                <span className="">Only you</span>
+              </div>
+            </DropdownMenuItem>
+            {/* <DropdownMenuItem
+              className={`flex items-center gap-4 ${
+                privacy == "followers" && "bg-indigo-800"
+              }`}
+            >
+              <LockKeyhole color="white" />
+              <div
+                className="flex flex-col gap-1"
+                onClick={() => {
+                  setPrivacy("followers");
+                }}
+              >
+                <span className="text-sm font-medium">Followers</span>
+                <span className="">Only your followers</span>
+              </div>
+            </DropdownMenuItem> */}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+    </DrawerContent>
   );
 }

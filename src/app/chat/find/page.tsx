@@ -49,7 +49,7 @@ export default function Page() {
       // easily I can write some queries myself
     };
 
-    fetchUsers(20).then((res) => {
+    fetchUsers(128).then((res) => {
       if (res) {
         const newRes = res?.map((r) => {
           return {
