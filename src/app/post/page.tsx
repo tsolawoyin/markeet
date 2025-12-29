@@ -280,7 +280,7 @@ export default function Page() {
         }}
       />
       <Drawer>
-        <InputGroup className="outline-none border-none focus:outline-none focus:border-none">
+        <InputGroup className="focus-visible:ring-0 border-0">
           <InputGroupTextarea
             placeholder="Share your thought, promote your product, or ask questions."
             value={text}
@@ -466,6 +466,7 @@ function PollInt({
           <p className="text-xs">Poll duration</p>
           <select
             className="appearance-none text-blue-400 outline-none"
+            defaultValue={"1 day"}
             onChange={(event) => {
               setPoll((draft) => {
                 if (draft) {
@@ -479,9 +480,7 @@ function PollInt({
             <option value="1 hour">1 hour</option>
             <option value="6 hours">6 hours</option>
             <option value="12 hours">12 hours</option>
-            <option value="1 day" selected>
-              1 day
-            </option>
+            <option value="1 day">1 day</option>
             <option value="3 days">3 days</option>
             <option value="7 days">7 days</option>
           </select>
