@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useImmer } from "use-immer";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { Updater, useImmer } from "use-immer"; // another lesson learned here. sharp thing. thank you. eseun gan ni...
 import { Check } from "lucide-react";
 
 import { getTimeRemaining } from "@/lib/get-time-remaining";
@@ -11,7 +11,12 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "../ui/checkbox";
 import { Button } from "../ui/button";
 
+import { Loader } from "lucide-react";
+
 import Link from "next/link";
+import { Progress } from "../ui/progress";
+
+import { useShell } from "@/shell/shell";
 
 interface Question {
   id: string;
@@ -25,6 +30,7 @@ export interface Poll {
   duration: string;
   style: "single" | "multiple";
   expiresAt: string; // ISO timestamp
+  hasVoted: boolean;
 }
 
 interface PollComponentProps {
@@ -32,12 +38,24 @@ interface PollComponentProps {
   onVote?: (questionIds: string[]) => void;
 }
 
+// sharp...
+// the only thing remaining is the live update.
 export default function PollComponent({ poll, onVote }: PollComponentProps) {
   // exactly
   // this is sharp thinking
+  const { supabase, user } = useShell(); // sharp
   const [selectedOptions, setSelectedOptions] = useImmer<string[]>([]);
+  const [previousSelection, setPreviousSelection] = useState<string | null>(
+    null
+  );
+  const [questions, setQuestions] = useImmer<Question[]>(poll.questions); // this one needs update
+  const [seeResult, setSeeResult] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   // Yes I'm currently dealing with the user hasn't voted state
-  const hasUserVoted = false; // TODO: Add Supabase lookup to check if user has voted
+  // actually, we should implement it sharp
+  // We always assume that user has voted. makes sense
+  const hasUserVoted = poll.hasVoted;
+  //   const [hasUserVoted, setHasUserVoted] = useState(false); // TODO: Add Supabase lookup to check if user has voted
 
   // Calculate total votes
   const totalVotes = poll.questions.reduce((sum, q) => sum + q.vote, 0);
@@ -48,100 +66,106 @@ export default function PollComponent({ poll, onVote }: PollComponentProps) {
     : false;
 
   const canVote = !hasUserVoted && !isExpired;
+  const showResult = hasUserVoted || isExpired || seeResult;
 
   // Handle vote submission
-  const handleVote = () => {
-    if (selectedOptions.length === 0 || !canVote) return;
-    onVote?.(selectedOptions);
-  };
+  const handleVote = async () => {
+    const userHasVoted = async (pollId: string, userId: string | undefined) => {
+      const { data, error } = await supabase
+        .from("poll_votes")
+        // , { count: "exact", head: true }
+        .select("*") // Just count, don't fetch data
+        .eq("user_id", userId)
+        .eq("poll_id", pollId);
 
-  // Calculate percentage for a question
-  const getPercentage = (votes: number) => {
-    if (totalVotes === 0) return 0;
-    return Math.round((votes / totalVotes) * 100);
+      if (error) {
+        console.error("Error checking vote:", error);
+        return false;
+      }
+
+      return data.length > 0;
+    };
+
+    if (selectedOptions.length === 0 || !canVote) return;
+    // onVote?.(selectedOptions);
+    setSubmitting(true);
+
+    const poll_votes = selectedOptions.map((option) => {
+      return {
+        poll_id: poll.id,
+        question_id: option,
+        user_id: user?.id,
+      };
+    });
+
+    try {
+      // just double-checking to ensure no double voting anywhere
+      let voted = await userHasVoted(poll.id, user?.id);
+      if (!voted) {
+        let { error } = await supabase.from("poll_votes").insert(poll_votes); // imagine
+
+        if (error) throw error;
+
+        // sharp... nice and easy my nigor
+        setSeeResult(true);
+      } else {
+        // user wants to revote which is unfortunately not possible. Sorry o.
+        // Ole thief
+        setSubmitting(false);
+      }
+    } catch (error) {
+      // setSeeResult(false);
+      setSubmitting(false);
+    }
   };
 
   useEffect(() => {
-    console.log(selectedOptions);
-  }, [selectedOptions]);
+    console.log(questions);
+  }, [questions]);
+  // Hello world...
+  // God help us...
+  return (
+    <div>
+      {canVote && !showResult ? (
+        <PollVote
+          // sharp
+          style={poll.style}
+          questions={questions}
+          setSelectedOptions={setSelectedOptions}
+          setQuestions={setQuestions}
+          previousSelection={previousSelection}
+          setPreviousSelection={setPreviousSelection}
+        />
+      ) : (
+        <PollResult questions={questions} />
+      )}
 
-  // This is one state
-  if (canVote) {
-    return (
-      <div className="">
-        {poll.style == "single" ? (
-          // this one for single choices
-          <RadioGroup
-            className="pt-4 grid gap-5"
-            onValueChange={(value) => {
-              // console.log(value);
-              // there can't be a combination of values here
-              if (!selectedOptions.includes(value)) {
-                setSelectedOptions(() => {
-                  return [value]; // that's all
-                });
-              }
-            }}
-          >
-            {poll.questions.map((question, index) => {
-              return (
-                <div className="flex items-center gap-3">
-                  <RadioGroupItem value={question.id} id={question.id} />
-                  <Label htmlFor={question.id}>{question.question}</Label>
-                </div>
-              );
-            })}
-          </RadioGroup>
-        ) : (
-          <div className="grid gap-5 pt-5">
-            {poll.questions.map((question) => {
-              return (
-                <div className="flex items-center gap-3">
-                  {/* This enables us to have multiple answers */}
-                  <Checkbox
-                    id={question.id}
-                    onCheckedChange={(checked) => {
-                      // console.log(checked)
-                      if (checked) {
-                        setSelectedOptions((draft) => {
-                          draft.push(question.id); // we pass in the id for now sha
-                        });
-                      } else {
-                        setSelectedOptions((draft) => {
-                          let newFilterList = draft.filter(
-                            (id) => id != question.id
-                          );
-                          return newFilterList; // sharp
-                        });
-                      }
-                    }}
-                  />
-                  <Label htmlFor={question.id} className="font-medium">
-                    {question.question}
-                  </Label>
-                </div>
-              );
-            })}
-          </div>
+      <footer className="flex items-center mt-7 gap-3">
+        {canVote && !showResult && (
+          <Button variant={"outline"} onClick={handleVote}>
+            {submitting ? <Loader className="animate-spin" /> : "Vote"}
+          </Button>
         )}
-        {/* I'll try to make it local here sha */}
-        <footer className="flex items-center mt-7 gap-3">
-          <Button variant={"outline"}>Vote</Button>
-          <p className="text-sm text-muted-foreground underline">
-            <Link href="#">See results</Link>
+        {canVote && !showResult && (
+          <p
+            className="text-sm text-muted-foreground underline"
+            onClick={() => setSeeResult(true)}
+          >
+            See results
           </p>
-          <p className="text-sm text-muted-foreground">1 person</p>
-          <p className="text-sm text-muted-foreground ">
-            <PollTimer expiresAt={poll.expiresAt} />
-          </p>
-        </footer>
-      </div>
-    );
-  } else {
-    // user will just see only result here. that's all
-    // and the results have only one state.
-  }
+        )}
+        <p className="text-sm text-muted-foreground">
+          {canVote && !seeResult ? "1 person" : `${totalVotes} votes`}
+        </p>
+        <p className="text-sm text-muted-foreground ">
+          <PollTimer expiresAt={poll.expiresAt} />
+        </p>
+      </footer>
+    </div>
+  );
 }
+
+// Sharp. Makes sense now
 
 function PollTimer({ expiresAt }: { expiresAt: string }) {
   const [timeLeft, setTimeLeft] = useState(getTimeRemaining(expiresAt));
@@ -155,4 +179,163 @@ function PollTimer({ expiresAt }: { expiresAt: string }) {
   }, [expiresAt]);
 
   return <span>{timeLeft}</span>;
+}
+
+function PollResult({ questions }: { questions: Question[] }) {
+  // Calculate total votes
+  const totalVotes = questions.reduce((sum, q) => sum + q.vote, 0);
+
+  const getPercentage = (votes: number) => {
+    if (totalVotes === 0) return 0;
+    return Math.round((votes / totalVotes) * 100);
+  };
+
+  return (
+    <div className="grid gap-5 pt-5">
+      {questions.map((question) => {
+        let percent = getPercentage(question.vote);
+
+        // Find max vote count for relative color intensity
+        const maxVote = Math.max(...questions.map((q) => q.vote), 1);
+        const minVote = Math.min(...questions.map((q) => q.vote));
+
+        // Calculate relative intensity (0 to 1)
+        const voteRange = maxVote - minVote || 1;
+        const relativeIntensity =
+          maxVote === 0 ? 0.5 : (question.vote - minVote) / voteRange;
+
+        // Map intensity to lightness range (50% to 75%)
+        // Higher votes = brighter (higher lightness)
+        // Lower votes = darker (lower lightness)
+        const lightness = 50 + relativeIntensity * 25; // 50% to 75%
+
+        // Keep chroma higher for more vibrant colors
+        const chroma = 0.18;
+
+        return (
+          <div className="grid gap-2" key={question.id}>
+            <div className="flex gap-5">
+              <span className="font-medium">{percent}%</span>
+              <span>{question.question}</span>
+            </div>
+            <div
+              style={{
+                background: `oklch(${lightness}% ${chroma} 277)`,
+                width: `${Math.max(percent, 2)}%`,
+              }}
+              className="h-1 rounded-sm"
+            />
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+function PollVote({
+  style,
+  questions,
+  setSelectedOptions,
+  setQuestions,
+  previousSelection,
+  setPreviousSelection,
+}: {
+  style: string;
+  questions: Question[];
+  setSelectedOptions: Updater<string[]>;
+  previousSelection: string | null;
+  setQuestions: Updater<Question[]>;
+  setPreviousSelection: Dispatch<SetStateAction<string | null>>;
+}) {
+  return (
+    <div className="">
+      {style == "single" ? (
+        // this one for single choices
+        <RadioGroup
+          className="pt-4 grid gap-5"
+          onValueChange={(value) => {
+            setSelectedOptions(() => {
+              return [value];
+            });
+
+            setQuestions((draft) => {
+              // Decrement the previous selection
+              if (previousSelection) {
+                let prev = draft.find((q) => q.id === previousSelection);
+                if (prev && prev.vote > 0) {
+                  prev.vote -= 1;
+                }
+              }
+
+              // Increment the new selection
+              let curr = draft.find((q) => q.id === value);
+              if (curr) {
+                curr.vote += 1;
+              }
+            });
+
+            // Update previous selection
+            setPreviousSelection(value);
+          }}
+        >
+          {questions.map((question, index) => {
+            return (
+              <div className="flex items-center gap-3" key={question.id}>
+                <RadioGroupItem value={question.id} id={question.id} />
+                <Label htmlFor={question.id}>{question.question}</Label>
+              </div>
+            );
+          })}
+        </RadioGroup>
+      ) : (
+        <div className="grid gap-5 pt-5">
+          {questions.map((question) => {
+            return (
+              <div className="flex items-center gap-3">
+                {/* This enables us to have multiple answers */}
+                <Checkbox
+                  id={question.id}
+                  onCheckedChange={(checked) => {
+                    if (checked) {
+                      setSelectedOptions((draft) => {
+                        draft.push(question.id);
+                      });
+
+                      setQuestions((draft) => {
+                        let curr = draft.find((q) => q.id === question.id);
+                        if (curr) {
+                          curr.vote += 1;
+                        }
+                      });
+                    } else {
+                      setSelectedOptions((draft) => {
+                        // Find and remove the item - Immer style
+                        const index = draft.findIndex(
+                          (id: string) => id === question.id
+                        );
+                        if (index !== -1) {
+                          draft.splice(index, 1);
+                        }
+                      });
+
+                      setQuestions((draft) => {
+                        let curr = draft.find((q) => q.id === question.id);
+                        if (curr && curr.vote > 0) {
+                          // ← Safety check to prevent negative votes
+                          curr.vote -= 1;
+                        }
+                      });
+                    }
+                  }}
+                />
+                <Label htmlFor={question.id} className="font-medium">
+                  {question.question}
+                </Label>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
 }
