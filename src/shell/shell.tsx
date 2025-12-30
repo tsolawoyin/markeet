@@ -95,7 +95,7 @@ export default function Shell({ children, supabase_user }: ShellProps) {
     <ShellContext.Provider
       value={{ user, setUser, supabase, currentPath, dexie }}
     >
-      <div className="w-full min-h-screen dark:bg-slate-950">{children}</div>
+      <div className="w-full min-h-screen">{children}</div>
       <Footer />
     </ShellContext.Provider>
   );

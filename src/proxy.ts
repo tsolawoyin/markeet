@@ -66,7 +66,7 @@ export default async function proxy(request: NextRequest) {
   ];
 
   // Auth-related paths that logged-in users should be redirected from
-  const authPaths = ["/", "/login", "/sign-up"];
+  const authPaths = ["/login", "/sign-up"];
 
   // Check if current path is in public paths
   const isPublicPath = publicPaths.some(
@@ -95,7 +95,7 @@ export default async function proxy(request: NextRequest) {
   // Redirect logged-in users from auth pages to /browse
   if (user && authPaths.includes(request.nextUrl.pathname)) {
     const url = request.nextUrl.clone();
-    url.pathname = "/browse";
+    url.pathname = "/"; // redirect from auth pages to "/"; smiles
     return NextResponse.redirect(url);
   }
 

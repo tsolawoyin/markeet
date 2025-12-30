@@ -32,23 +32,6 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 
-import {
-  ArrowUpIcon,
-  ImageUp,
-  ChartNoAxesColumn,
-  Loader,
-  Circle,
-  Plus,
-  X,
-  ChevronsUpDown,
-  LockKeyhole,
-  Globe,
-  Moon,
-} from "lucide-react";
-import { IconPlus } from "@tabler/icons-react";
-
-import { capitalize, size } from "lodash";
-
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 import {
@@ -62,6 +45,26 @@ import {
 
 import { Input } from "@/components/ui/input";
 
+import ProfileHeader from "@/components/blocks/profile";
+
+import {
+  ArrowUpIcon,
+  ImageUp,
+  ChartNoAxesColumn,
+  Loader,
+  Circle,
+  Plus,
+  X,
+  ChevronsUpDown,
+  LockKeyhole,
+  Globe,
+  Moon,
+} from "lucide-react";
+
+import { IconPlus } from "@tabler/icons-react";
+
+import { capitalize, size } from "lodash";
+
 import { useState, useRef, useEffect, ChangeEvent } from "react";
 import { Updater, useImmer } from "use-immer";
 
@@ -70,7 +73,6 @@ import { useShell } from "@/shell/shell";
 import { v4 } from "uuid";
 
 import Image from "next/image";
-import { Select } from "@/components/ui/select";
 
 interface Question {
   id: string;
@@ -83,18 +85,6 @@ interface Poll {
   questions: Question[];
   duration: string;
   style: "single" | "multiple";
-}
-
-interface Post {
-  id: string;
-  content: string;
-  images?: string[];
-  privacy: "public" | "private";
-  comments: number;
-  boosts: number;
-  favorites: number;
-  createdBy: string;
-  createdAt: string;
 }
 
 export default function Page() {
@@ -272,7 +262,7 @@ export default function Page() {
 
   return (
     <div className="p-3 grid gap-4">
-      <ItemAvatar
+      <ProfileHeader
         user={{
           fullName: user?.user_metadata.full_name,
           avatarUrl: user?.user_metadata.avatar_url,
@@ -505,33 +495,6 @@ function PollInt({
           </select>
         </div>
       </div>
-    </div>
-  );
-}
-
-interface User {
-  fullName: string;
-  avatarUrl: string | null;
-  username: string | null;
-}
-
-export function ItemAvatar({ user }: { user: User }) {
-  return (
-    <div className="flex w-full max-w-lg flex-col gap-6">
-      <Item>
-        <ItemMedia>
-          <Avatar className="size-10">
-            <AvatarImage
-              src={user.avatarUrl || "https://github.com/evilrabbit.png"}
-            />
-            <AvatarFallback>ER</AvatarFallback>
-          </Avatar>
-        </ItemMedia>
-        <ItemContent>
-          <ItemTitle>{user.fullName}</ItemTitle>
-          <ItemDescription>@{user.username || "star"}</ItemDescription>
-        </ItemContent>
-      </Item>
     </div>
   );
 }
