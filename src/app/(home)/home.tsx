@@ -13,9 +13,15 @@ export default function Home({ posts }: { posts: PostType[] }) {
   return (
     <div>
       <div className="grid gap-2">
-        {posts.map((post) => {
-          return <Post post={post} key={post.id}/>;
-        })}
+        {posts
+          .sort((a, b) => {
+            return (
+              new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+            );
+          })
+          .map((post) => {
+            return <Post post={post} key={post.id} />;
+          })}
       </div>
     </div>
   );

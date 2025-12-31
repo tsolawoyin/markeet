@@ -52,6 +52,7 @@ export default function Shell({ children, supabase_user }: ShellProps) {
   // Set user to user from server
   const [user, setUser] = useState<User | null>(supabase_user.user);
 
+  console.log(user);
   // NEXT.js Hooks
   const currentPath = usePathname();
   const router = useRouter();

@@ -18,7 +18,7 @@ import { formatTime } from "@/lib/time-converter";
 export interface User {
   fullName: string;
   avatarUrl: string | null;
-  username: string | null;
+  course: string | null;
 }
 
 export default function ProfileHeader({
@@ -51,7 +51,7 @@ export default function ProfileHeader({
               </span>
             )}
           </ItemTitle>
-          <ItemDescription>@{user.username || "star"}</ItemDescription>
+          <ItemDescription>{user.course || ""}</ItemDescription>
         </ItemContent>
       </Item>
     </div>

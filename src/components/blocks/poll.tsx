@@ -119,11 +119,6 @@ export default function PollComponent({ poll, onVote }: PollComponentProps) {
     }
   };
 
-  useEffect(() => {
-    console.log(questions);
-  }, [questions]);
-  // Hello world...
-  // God help us...
   return (
     <div>
       {canVote && !showResult ? (

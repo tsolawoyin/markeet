@@ -10,7 +10,7 @@ export default async function Page() {
   let { data: posts, error } = await supabase.from("posts").select(
     `
       *,
-    profile:profiles!created_by(id, full_name, avatar_url),
+    profile:profiles!created_by(id, full_name, course, avatar_url),
     polls(
       id,
       duration,
@@ -46,6 +46,36 @@ export default async function Page() {
     return data.length > 0;
   };
 
+  // Get user's favorites
+  const { data: userFavorites } = await supabase
+    .from("favorites")
+    .select("post_id")
+    .eq("user_id", user.user?.id);
+
+  const favoritePostIds = new Set(
+    userFavorites?.map((fav) => fav.post_id) || []
+  );
+
+  // Get user's boost
+  const { data: userBoosts } = await supabase
+    .from("boosts")
+    .select("post_id")
+    .eq("user_id", user.user?.id);
+
+  const boostedPostIds = new Set(
+    userBoosts?.map((boost) => boost.post_id) || []
+  );
+
+  // Get user's bookmark
+  const { data: userBookmarks } = await supabase
+    .from("bookmarks")
+    .select("post_id")
+    .eq("user_id", user.user?.id);
+
+  const bookmarkedPostIds = new Set(
+    userBookmarks?.map((bookmark) => bookmark.post_id) || []
+  );
+
   // Repackaged everything to match up with the data we will be working with...
   // nice and sharp...
   // sharp. Makes sense. Thanks.
@@ -55,7 +85,7 @@ export default async function Page() {
       const newProfile = {
         fullName: post.profile.full_name,
         avatarUrl: post.profile.avatar_url,
-        username: null,
+        course: post.profile.course,
       };
 
       let poll = null;
@@ -70,8 +100,6 @@ export default async function Page() {
           expiresAt: post.polls.expires_at,
           hasVoted: voted,
         };
-
-        console.log(voted);
       }
 
       return {
@@ -86,9 +114,15 @@ export default async function Page() {
         createdAt: post.created_at,
         profile: newProfile,
         poll: poll, // just convert plural to singular here
+        hasLiked: favoritePostIds.has(post.id),
+        hasBoosted: boostedPostIds.has(post.id),
+        hasBookmarked: bookmarkedPostIds.has(post.id),
       };
     })
   );
 
   return <Home posts={posts} />;
 }
+
+// And everything is just clean and simple.
+// Thank you. God bless you.
