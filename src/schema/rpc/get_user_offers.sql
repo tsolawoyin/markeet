@@ -1,4 +1,9 @@
-DECLARE
+CREATE OR REPLACE FUNCTION public.get_user_offers(user_id uuid, filter_status text DEFAULT NULL::text, filter_type text DEFAULT NULL::text, page_limit integer DEFAULT 20, page_offset integer DEFAULT 0)
+ RETURNS TABLE(id uuid, title text, description text, price numeric, offer_type text, turnaround_days integer, images text[], tags text[], views_count integer, created_at text, status text, seller jsonb, category jsonb, total_count bigint, has_more boolean)
+ LANGUAGE plpgsql
+ SECURITY DEFINER
+ SET search_path TO 'public'
+AS $function$DECLARE
   total_records bigint;
 BEGIN
   -- Get total count of matching records
@@ -18,7 +23,7 @@ BEGIN
     o.price,
     o.offer_type,
     o.turnaround_days,
-    o.images as images, --- return all images
+    o.images as images,
     o.tags,
     COALESCE(o.views_count, 0) as views_count,
     -- Format created_at as relative time
@@ -71,4 +76,4 @@ BEGIN
   ORDER BY o.created_at DESC
   LIMIT page_limit
   OFFSET page_offset;
-END;
+END;$function$
