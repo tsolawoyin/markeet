@@ -17,6 +17,7 @@ import {
 } from "@supabase/supabase-js";
 import PushNotification from "./push-notification-context";
 import { Toaster } from "@/components/ui/sonner";
+import Footer from "@/components/footer";
 import { debug } from "@/utils/debug";
 
 export interface About {
@@ -156,7 +157,7 @@ export default function AppProvider({
           >
             {children}
           </div>
-          {/* {user && !disableFooter && <Footer />} */}
+          {user && !disableFooter && <Footer />}
           {/* Let's talk about Footer later jare... */}
         </div>
         <Toaster />
