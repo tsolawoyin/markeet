@@ -61,7 +61,7 @@ export function HomeFeed() {
 
             <div className="grid grid-cols-2 gap-3 mt-3">
               <Link
-                href="/create/offer"
+                href="/create/listing"
                 className="flex items-center gap-3 p-3 bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl hover:border-orange-300 dark:hover:border-orange-800 transition-colors"
               >
                 <div className="w-9 h-9 rounded-lg bg-orange-50 dark:bg-orange-900/20 flex items-center justify-center">
