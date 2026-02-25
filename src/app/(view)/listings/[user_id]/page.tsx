@@ -14,7 +14,7 @@ export default function UserListingsPage() {
   const { supabase, user } = useApp();
   const params = useParams();
   const router = useRouter();
-  const userId = params.userId as string;
+  const userId = params.user_id as string;
 
   const [listings, setListings] = useState<Listing[]>([]);
   const [loading, setLoading] = useState(true);

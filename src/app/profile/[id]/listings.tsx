@@ -60,7 +60,7 @@ export default function Listings() {
         </h2>
         {userId && (
           <Link
-            href={`/view/listings/${userId}`}
+            href={`/listings/${userId}`}
             className="flex items-center gap-0.5 text-sm font-semibold text-orange-600 dark:text-orange-400 hover:opacity-80 transition-opacity"
           >
             View all
