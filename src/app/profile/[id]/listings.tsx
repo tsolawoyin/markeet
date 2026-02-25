@@ -71,7 +71,7 @@ export default function Listings() {
 
       <div className="grid grid-cols-2 gap-3">
         {listings.map((listing) => (
-          <Link key={listing.id} href={`/view/listing/${listing.id}`}>
+          <Link key={listing.id} href={`/listing/${listing.id}`}>
             <ListingCard listing={listing} />
           </Link>
         ))}

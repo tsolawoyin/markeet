@@ -70,7 +70,7 @@ const pathToDisableFooter = [
   "/create/offer",
   "/create/order",
   "/create/payment",
-  "/view/listing",
+  "/listing",
   "/view/wish",
   "/view/wallet",
   "/admin/orders",

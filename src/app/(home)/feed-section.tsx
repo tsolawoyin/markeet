@@ -182,7 +182,7 @@ const FeedSection = ({
           </h2>
         </div>
         <Link
-          href={`/view/category/${type}`}
+          href={`/category/${type}`}
           className={`flex items-center gap-0.5 text-sm font-semibold ${style.accent} ${style.accentDark} hover:opacity-80 transition-opacity`}
         >
           See all
@@ -193,7 +193,7 @@ const FeedSection = ({
       {/* Horizontal Scroll */}
       <div className="flex gap-3 px-5 lg:px-8 overflow-x-auto pb-2 scrollbar-hide">
         {items.map((item, index) => (
-          <Link key={item?.id ?? index} href={`/view/listing/${item?.id}`}>
+          <Link key={item?.id ?? index} href={`/listing/${item?.id}`}>
             <ListingCard listing={item as Listing | null} />
           </Link>
         ))}

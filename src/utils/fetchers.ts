@@ -53,6 +53,14 @@ export const fetchCourseListings = async (
   return offers as Listing[];
 };
 
+export const fetchOffer = async (supabase: SupabaseClient, id: string) => {
+  const { data } = await supabase.rpc("get_offer_details", {
+    offer_id: id,
+  });
+
+  return data?.[0] as Listing | null;
+};
+
 export async function fetchUserOffers(
   supabase: SupabaseClient,
   userId: string,

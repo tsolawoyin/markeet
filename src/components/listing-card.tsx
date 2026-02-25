@@ -5,7 +5,7 @@ export interface Listing {
   title: string;
   description: string;
   price: number;
-  type: "product"; // Take note of this. For now we deal with listing
+  offer_type: "product"; // Take note of this. For now we deal with listing
   //   turnaround_days: number | null;
   condition?: string | null;
   images: string[]; // this is one of the mistakes I made. Smiles...
