@@ -97,4 +97,41 @@ export async function fetchUserOffers(
   }
 }
 
+export const fetchSearchResults = async (
+  supabase: SupabaseClient,
+  params: {
+    search_text?: string;
+    filter_category_id?: string;
+    filter_offer_type?: string;
+    filter_condition?: string;
+    filter_hall?: string;
+    filter_price_min?: number;
+    filter_price_max?: number;
+    sort_by?: string;
+    page_limit?: number;
+    page_offset?: number;
+  },
+) => {
+  const { data, error } = await supabase.rpc("search_offers", {
+    search_text: params.search_text || "",
+    filter_category_id: params.filter_category_id || null,
+    filter_offer_type: params.filter_offer_type || null,
+    filter_condition: params.filter_condition || null,
+    filter_hall: params.filter_hall || null,
+    filter_price_min: params.filter_price_min ?? null,
+    filter_price_max: params.filter_price_max ?? null,
+    sort_by: params.sort_by || "newest",
+    page_limit: params.page_limit || 20,
+    page_offset: params.page_offset || 0,
+  });
+
+  if (error) {
+    console.log("hi");
+    debug.error(error);
+    console.log(error);
+    return [];
+  }
+  return data;
+};
+
 // We can fetch some other listings later...
