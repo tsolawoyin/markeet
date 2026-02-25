@@ -68,7 +68,7 @@ export default function Footer() {
             <Link
               key={item.url}
               href={item.url}
-              className={`relative flex flex-col items-center justify-center gap-0.5 min-w-[64px] py-2 rounded-xl transition-all active:scale-95 ${
+              className={`relative flex flex-col items-center justify-center gap-0.5 min-w-16 py-2 rounded-xl transition-all active:scale-95 ${
                 isActive
                   ? "text-orange-600 dark:text-orange-400"
                   : "text-stone-400 dark:text-stone-500 hover:text-stone-600 dark:hover:text-stone-300"
