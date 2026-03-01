@@ -38,7 +38,7 @@ const SLIDES: Slide[] = [
     subtitle:
       "Whether you\u2019re a fresher or a returning student \u2014 Markeet is your campus marketplace. Buy, sell, and connect with verified UI students.",
     cta: "Explore Marketplace",
-    ctaLink: "/view/category/all",
+    ctaLink: "/category/all",
     image:
       "https://images.unsplash.com/photo-1523580494863-6f3031224c94?w=1200&q=80",
     icon: GraduationCap,
@@ -50,7 +50,7 @@ const SLIDES: Slide[] = [
     subtitle:
       "Resuming soon? Find affordable textbooks, mattresses, kitchen essentials, and more from fellow UI students \u2014 all in one place.",
     cta: "Browse Listings",
-    ctaLink: "/view/category/all",
+    ctaLink: "/category/all",
     image:
       "https://images.unsplash.com/photo-1523580494863-6f3031224c94?w=1200&q=80",
     icon: ShoppingBag,
@@ -62,7 +62,7 @@ const SLIDES: Slide[] = [
     subtitle:
       "Don\u2019t let your items go to waste. List your belongings in minutes and find buyers within the UI community before you leave.",
     cta: "Start Selling",
-    ctaLink: "/create/offer",
+    ctaLink: "/create/listing",
     image:
       "https://images.unsplash.com/photo-1541339907198-e08756dedf3f?w=1200&q=80",
     icon: PackageOpen,
@@ -74,7 +74,7 @@ const SLIDES: Slide[] = [
     subtitle:
       "Every user is verified with their UI email. Trade safely within a trusted campus community.",
     cta: "Start Shopping",
-    ctaLink: "/view/category/all",
+    ctaLink: "/category/all",
     image:
       "https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?w=1200&q=80",
     icon: BadgeCheck,
