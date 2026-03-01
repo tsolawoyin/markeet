@@ -69,7 +69,7 @@ export default function MyProfile() {
   ];
 
   return (
-    <div className="min-h-screen bg-stone-50 dark:bg-stone-950">
+    <div className="min-h-dvh bg-stone-50 dark:bg-stone-950">
       {/* Header with gradient branding */}
       <div className="bg-linear-to-br from-amber-500 via-amber-600 to-amber-700 dark:from-orange-600 dark:via-orange-700 dark:to-orange-800 text-white relative overflow-hidden">
         <div className="absolute -top-10 -right-10 w-32 h-32 bg-white/10 rounded-full" />
@@ -84,7 +84,7 @@ export default function MyProfile() {
       </div>
 
       {/* Main Content */}
-      <div className="px-5 lg:px-12 py-6 space-y-4">
+      <div className="px-2 lg:px-12 py-6 space-y-4">
         {/* Personal Information Card */}
         <div className="bg-white dark:bg-stone-900 rounded-2xl border border-stone-200 dark:border-stone-800 overflow-hidden">
           <div className="px-4 py-3 border-b border-stone-200 dark:border-stone-800">
