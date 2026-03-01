@@ -4,6 +4,7 @@ import ProfileHeader from "./header";
 import Listings from "./listings";
 // import Reviews from "./review";
 import About from "./about";
+import MyProfile from "./my-profile";
 import { useApp } from "@/providers/app-provider";
 import { useParams } from "next/navigation";
 import Link from "next/link";
@@ -91,6 +92,12 @@ export default function Profile() {
     return <GuestProfilePrompt />;
   }
 
+  // Logged-in user viewing their own profile (/profile/me)
+  if (params.id === "me" && user) {
+    return <MyProfile />;
+  }
+
+  // Viewing another user's profile
   return (
     <div className="min-h-screen bg-stone-50 dark:bg-stone-950">
       <ProfileHeader />
