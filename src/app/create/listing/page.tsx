@@ -316,7 +316,7 @@ export default function CreateListing() {
         },
       );
 
-      router.push(`/view/listing/${data.id}`);
+      router.push(`/listing/${data.id}`);
     } catch (err) {
       console.error(err);
       toast.error(
