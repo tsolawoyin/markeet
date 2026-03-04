@@ -1,15 +1,16 @@
 "use client";
 
 import { useApp } from "@/providers/app-provider";
-import FeedSection from "./feed-section";
 import HeroCarousel from "./hero-carousel";
+import { CategoryBar, type CategoryFilter } from "./category-bar";
+import { ProductGrid } from "./product-grid";
 import Link from "next/link";
-import { Search, Plus, Building2, UserCircle, Users, Check } from "lucide-react";
-import { useMemo, useState, useCallback } from "react";
-import { toast } from "sonner";
+import { Search, Plus, UserCircle } from "lucide-react";
+import { useMemo, useState } from "react";
 
 export function HomeFeed() {
   const { user } = useApp();
+  const [activeFilter, setActiveFilter] = useState<CategoryFilter>({ type: "all" });
 
   const isNewUser = useMemo(() => {
     if (!user) return false;
@@ -20,20 +21,6 @@ export function HomeFeed() {
   }, [user]);
 
   const needsProfileCompletion = user && (!user.profile.avatar_url || !user.profile.bio);
-
-  const [copied, setCopied] = useState(false);
-  const handleCopyReferral = useCallback(async () => {
-    if (!user) return;
-    const link = `${window.location.origin}/sign-up?ref=${user.id}`;
-    try {
-      await navigator.clipboard.writeText(link);
-      setCopied(true);
-      toast.success("Referral link copied!");
-      setTimeout(() => setCopied(false), 2000);
-    } catch {
-      toast.error("Failed to copy link");
-    }
-  }, [user]);
 
   return (
     <div className="min-h-screen bg-stone-50 dark:bg-stone-950">
@@ -72,41 +59,6 @@ export function HomeFeed() {
                 </span>
               </Link>
 
-              {/* <Link
-                href="/view/category/hall"
-                className="flex items-center gap-3 p-3 bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl hover:border-blue-300 dark:hover:border-blue-800 transition-colors"
-              >
-                <div className="w-9 h-9 rounded-lg bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center">
-                  <Building2 className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-                </div>
-                <span className="text-sm font-medium text-stone-700 dark:text-stone-200">
-                  Browse your hall
-                </span>
-              </Link> */}
-
-              {/* Referral CTA */}
-
-              {/* <button
-                onClick={handleCopyReferral}
-                className="flex items-center gap-3 p-3 bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl hover:border-purple-300 dark:hover:border-purple-800 transition-colors text-left"
-              >
-                <div className="w-9 h-9 rounded-lg bg-purple-50 dark:bg-purple-900/20 flex items-center justify-center shrink-0">
-                  {copied ? (
-                    <Check className="w-4 h-4 text-purple-600 dark:text-purple-400" />
-                  ) : (
-                    <Users className="w-4 h-4 text-purple-600 dark:text-purple-400" />
-                  )}
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-sm font-medium text-stone-700 dark:text-stone-200">
-                    {copied ? "Link copied!" : "Invite friends"}
-                  </span>
-                  <span className="text-xs text-stone-400 dark:text-stone-500">
-                    Earn &#8358;200 each
-                  </span>
-                </div>
-              </button> */}
-
               {needsProfileCompletion && (
                 <Link
                   href="/profile/me"
@@ -137,43 +89,11 @@ export function HomeFeed() {
         )
       )}
 
-      {/* Feed Sections */}
-      <FeedSection title="What students are selling" type="all" />
+      {/* Category Bar */}
+      <CategoryBar activeFilter={activeFilter} onSelect={setActiveFilter} />
 
-      {/* <FeedSection
-        title="Hire a student freelancer"
-        type="service"
-        emptyMessage="No freelancers yet. Got a skill? List your service!"
-        emptyCtaHref="/create/offer"
-        emptyCtaLabel="List a service"
-      /> */}
-
-      {user && (
-        <>
-          <FeedSection
-            title={`From ${user.profile.hall_of_residence} hall`}
-            type="hall"
-            emptyMessage={`No listings from ${user.profile.hall_of_residence} yet. Be the first!`}
-            emptyCtaHref="/create/offer"
-            emptyCtaLabel="List something"
-          />
-          <FeedSection
-            title={`For ${user.profile.course} Students`}
-            type="course"
-            emptyMessage={`Nothing for ${user.profile.course} students yet. List something!`}
-            emptyCtaHref="/create/offer"
-            emptyCtaLabel="List something"
-          />
-        </>
-      )}
-
-      {/* <FeedSection
-        title="Students are looking for"
-        type="wish"
-        emptyMessage="No wishes yet. Need something? Let sellers come to you!"
-        emptyCtaHref="/create/wish"
-        emptyCtaLabel="Post a wish"
-      /> */}
+      {/* Product Grid */}
+      <ProductGrid activeFilter={activeFilter} />
     </div>
   );
 }

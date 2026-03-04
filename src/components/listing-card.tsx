@@ -83,7 +83,7 @@ const THEME_COLORS = {
   },
 };
 
-const ListingCard = ({ listing }: { listing: Listing | null }) => {
+const ListingCard = ({ listing, variant = "scroll" }: { listing: Listing | null; variant?: "scroll" | "grid" }) => {
   // console.log(listing);
   const { supabase, user } = useApp();
   const [isFavorited, setIsFavorited] = useState(false);
@@ -199,9 +199,11 @@ const ListingCard = ({ listing }: { listing: Listing | null }) => {
     debouncedToggleFavorite(isFavorited);
   };
 
+  const widthClass = variant === "grid" ? "w-full" : "w-40 shrink-0";
+
   if (!listing) {
     return (
-      <div className="w-40 shrink-0">
+      <div className={widthClass}>
         {/* Image Container Skeleton */}
         <div className="relative aspect-4/5 rounded-xl overflow-hidden bg-stone-100 dark:bg-stone-900">
           <Skeleton className="w-full h-full" />
@@ -247,7 +249,7 @@ const ListingCard = ({ listing }: { listing: Listing | null }) => {
   }
 
   return (
-    <div className="w-40 shrink-0 cursor-pointer group">
+    <div className={`${widthClass} cursor-pointer group`}>
       {/* Image Container */}
       <div className="relative aspect-4/5 rounded-xl overflow-hidden bg-stone-100 dark:bg-stone-900 transition-transform group-hover:scale-[1.02]">
         <Image
@@ -255,7 +257,7 @@ const ListingCard = ({ listing }: { listing: Listing | null }) => {
           alt={listing.title}
           className="w-full h-full object-cover"
           fill
-          sizes="160px"
+          sizes={variant === "grid" ? "(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw" : "160px"}
         //   unoptimized
         />
 
