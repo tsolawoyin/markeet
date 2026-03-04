@@ -520,14 +520,14 @@ export default function ListingDetailPage({
       <div className="fixed bottom-0 left-0 right-0 p-5 bg-white dark:bg-stone-900 border-t border-stone-200 dark:border-stone-800 shadow-2xl z-50">
         <div className="flex gap-3 max-w-5xl mx-auto">
           {isOwner ? (
-            <Link href={`/create/offer?oid=${lid}`} className="flex-1">
+            <Link href={`/create/listing?oid=${lid}`} className="flex-1">
               <Button className="h-14 w-full bg-orange-600 hover:bg-orange-700 text-white text-base font-semibold rounded-xl shadow-md">
                 <Pencil className="w-5 h-5 mr-2" />
                 Edit Listing
               </Button>
             </Link>
           ) : !user ? (
-            <Link href="/auth/login" className="flex-1">
+            <Link href="/login" className="flex-1">
               <Button className="h-14 w-full bg-orange-600 hover:bg-orange-700 text-white text-base font-semibold rounded-xl shadow-md">
                 <LogIn className="w-5 h-5 mr-2" />
                 Sign in to contact seller
