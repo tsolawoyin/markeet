@@ -262,7 +262,7 @@ const ListingCard = ({ listing, variant = "scroll" }: { listing: Listing | null;
         />
 
         {/* Gradient Overlay */}
-        <div className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent" />
+        <div className={`absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent ${listing.status !== "active" ? "bg-black/40" : ""}`} />
 
         {/* Save Button */}
         <button
@@ -286,13 +286,18 @@ const ListingCard = ({ listing, variant = "scroll" }: { listing: Listing | null;
           />
         </button>
 
-        {/* Badge */}
-        <span className="absolute top-2 left-2 px-2 py-1 bg-orange-600 text-white text-xs font-semibold rounded-full">
-          {/* {listing.offer_type === "product" ? "PRODUCT" : "SERVICE"} */}
-          {/* PRODUCT */}
-          {/* since everything is product now sef, this is supposed to represent the condition of the item */}
-          
-        </span>
+        {/* Status Badge */}
+        {listing.status !== "active" && (
+          <span
+            className={`absolute top-2 left-2 px-2 py-1 text-white text-xs font-semibold rounded-full ${
+              listing.status === "sold"
+                ? "bg-stone-600"
+                : "bg-red-600"
+            }`}
+          >
+            {listing.status === "sold" ? "SOLD" : listing.status.toUpperCase()}
+          </span>
+        )}
 
         {/* Seller Avatar */}
         <div className="absolute bottom-2 left-2">

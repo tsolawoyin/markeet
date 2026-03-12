@@ -21,8 +21,20 @@ import {
   Phone,
   MessageCircle,
   LogIn,
+  Trash2,
+  Loader2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import Link from "next/link";
 import { fetchOffer } from "@/utils/fetchers";
 import { type Listing } from "@/components/listing-card";
@@ -160,8 +172,12 @@ export default function ListingDetailPage({
   const [error, setError] = useState<string | null>(null);
 
   const [isFavorited, setIsFavorited] = useState(false);
+  const [showSoldDialog, setShowSoldDialog] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [isUpdating, setIsUpdating] = useState(false);
 
   const isOwner = user?.id === listing?.seller?.id;
+  const isSold = listing?.status === "sold";
 
   // Share functionality
   const handleShare = async () => {
@@ -198,6 +214,56 @@ export default function ListingDetailPage({
       toast.success("Link copied to clipboard!");
     } catch {
       toast.error("Failed to copy link");
+    }
+  };
+
+  // Mark as sold
+  const handleMarkAsSold = async () => {
+    if (!listing || !user) return;
+    setIsUpdating(true);
+    try {
+      const newStatus = isSold ? "active" : "sold";
+      const { error } = await supabase
+        .from("offers")
+        .update({ status: newStatus })
+        .eq("id", listing.id)
+        .eq("seller_id", user.id);
+
+      if (error) throw error;
+
+      setListing({ ...listing, status: newStatus });
+      toast.success(
+        newStatus === "sold"
+          ? "Listing marked as sold"
+          : "Listing is active again",
+      );
+    } catch {
+      toast.error("Failed to update listing");
+    } finally {
+      setIsUpdating(false);
+      setShowSoldDialog(false);
+    }
+  };
+
+  // Delete listing (soft delete)
+  const handleDelete = async () => {
+    if (!listing || !user) return;
+    setIsUpdating(true);
+    try {
+      const { error } = await supabase
+        .from("offers")
+        .update({ status: "deleted" })
+        .eq("id", listing.id)
+        .eq("seller_id", user.id);
+
+      if (error) throw error;
+
+      toast.success("Listing deleted");
+      router.back();
+    } catch {
+      toast.error("Failed to delete listing");
+      setIsUpdating(false);
+      setShowDeleteDialog(false);
     }
   };
 
@@ -370,11 +436,15 @@ export default function ListingDetailPage({
           {/* Type Badge + Flag */}
           <div className="flex items-center gap-2 mb-3">
             <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-orange-100 dark:bg-orange-900/20 text-orange-800 dark:text-orange-400 text-sm font-semibold rounded-full border border-orange-200 dark:border-orange-800/40">
-              <>
-                <Package className="w-4 h-4" />
-                PRODUCT
-              </>
+              <Package className="w-4 h-4" />
+              PRODUCT
             </span>
+            {isSold && (
+              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400 text-sm font-semibold rounded-full border border-stone-200 dark:border-stone-700">
+                <CheckCircle2 className="w-4 h-4" />
+                SOLD
+              </span>
+            )}
             <button
               onClick={() => toast.info("Report feature coming soon")}
               className="ml-auto p-2 hover:bg-stone-100 dark:hover:bg-stone-800 rounded-full transition-colors"
@@ -516,16 +586,97 @@ export default function ListingDetailPage({
         </div>
       </div>
 
+      {/* Mark as Sold Confirmation */}
+      <AlertDialog open={showSoldDialog} onOpenChange={setShowSoldDialog}>
+        <AlertDialogContent className="dark:bg-stone-900 dark:border-stone-800">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="dark:text-white">
+              {isSold ? "Relist this item?" : "Mark as sold?"}
+            </AlertDialogTitle>
+            <AlertDialogDescription className="dark:text-stone-400">
+              {isSold
+                ? "This will make your listing visible to other students again."
+                : "This will remove your listing from search results and mark it as sold. You can relist it later."}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isUpdating}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleMarkAsSold}
+              disabled={isUpdating}
+              className={
+                isSold
+                  ? "bg-orange-600 hover:bg-orange-700 text-white"
+                  : "bg-green-600 hover:bg-green-700 text-white"
+              }
+            >
+              {isUpdating ? "Updating..." : isSold ? "Relist" : "Mark as sold"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Delete Confirmation */}
+      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <AlertDialogContent className="dark:bg-stone-900 dark:border-stone-800">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="dark:text-white">
+              Delete this listing?
+            </AlertDialogTitle>
+            <AlertDialogDescription className="dark:text-stone-400">
+              This action cannot be undone. Your listing will be permanently
+              removed.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isUpdating}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDelete}
+              disabled={isUpdating}
+              className="bg-red-600 hover:bg-red-700 text-white"
+            >
+              {isUpdating ? "Deleting..." : "Delete"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       {/* Fixed Bottom CTA */}
       <div className="fixed bottom-0 left-0 right-0 p-5 bg-white dark:bg-stone-900 border-t border-stone-200 dark:border-stone-800 shadow-2xl z-50">
         <div className="flex gap-3 max-w-5xl mx-auto">
           {isOwner ? (
-            <Link href={`/create/listing?oid=${lid}`} className="flex-1">
-              <Button className="h-14 w-full bg-orange-600 hover:bg-orange-700 text-white text-base font-semibold rounded-xl shadow-md">
-                <Pencil className="w-5 h-5 mr-2" />
-                Edit Listing
+            <>
+              <Link href={`/create/listing?oid=${lid}`}>
+                <Button className="h-14 px-4 bg-orange-600 hover:bg-orange-700 text-white text-sm font-semibold rounded-xl shadow-md">
+                  <Pencil className="w-4 h-4 mr-1.5" />
+                  Edit
+                </Button>
+              </Link>
+              <Button
+                onClick={() => setShowSoldDialog(true)}
+                disabled={isUpdating}
+                className={`h-14 flex-1 text-sm font-semibold rounded-xl shadow-md ${
+                  isSold
+                    ? "bg-stone-600 hover:bg-stone-700 text-white"
+                    : "bg-green-600 hover:bg-green-700 text-white"
+                }`}
+              >
+                {isUpdating ? (
+                  <Loader2 className="w-4 h-4 mr-1.5 animate-spin" />
+                ) : (
+                  <CheckCircle2 className="w-4 h-4 mr-1.5" />
+                )}
+                {isSold ? "Relist" : "Mark as sold"}
               </Button>
-            </Link>
+              <Button
+                onClick={() => setShowDeleteDialog(true)}
+                disabled={isUpdating}
+                variant="outline"
+                className="h-14 px-4 border-2 border-red-200 dark:border-red-800/40 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl"
+              >
+                <Trash2 className="w-4 h-4" />
+              </Button>
+            </>
           ) : !user ? (
             <Link href="/login" className="flex-1">
               <Button className="h-14 w-full bg-orange-600 hover:bg-orange-700 text-white text-base font-semibold rounded-xl shadow-md">
