@@ -287,7 +287,7 @@ const ListingCard = ({ listing, variant = "scroll" }: { listing: Listing | null;
         </button>
 
         {/* Status Badge */}
-        {listing.status !== "active" && (
+        {listing.status && listing.status !== "active" && (
           <span
             className={`absolute top-2 left-2 px-2 py-1 text-white text-xs font-semibold rounded-full ${
               listing.status === "sold"
