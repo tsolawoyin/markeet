@@ -53,13 +53,13 @@ function GuestProfilePrompt() {
 
         {/* CTA buttons */}
         <div className="space-y-3">
-          <Link href="/auth/login" className="block">
+          <Link href="/login" className="block">
             <div className="flex items-center justify-center gap-2 w-full py-3.5 bg-orange-500 hover:bg-orange-600 text-white font-semibold rounded-xl transition-colors shadow-sm">
               <LogIn className="w-4 h-4" />
               Sign In
             </div>
           </Link>
-          <Link href="/auth/sign-up" className="block">
+          <Link href="/sign-up" className="block">
             <div className="flex items-center justify-center gap-2 w-full py-3.5 bg-white dark:bg-stone-900 text-stone-900 dark:text-white font-semibold rounded-xl border-2 border-stone-200 dark:border-stone-700 hover:border-orange-400 dark:hover:border-orange-500 transition-colors">
               <UserPlus className="w-4 h-4" />
               Create Account
