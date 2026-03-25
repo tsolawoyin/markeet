@@ -167,6 +167,10 @@ export async function POST(request: Request) {
 
     const sent = results.filter((r) => r.status === "fulfilled").length;
     const failed = results.filter((r) => r.status === "rejected").length;
+    const errors = results
+      .filter((r): r is PromiseRejectedResult => r.status === "rejected")
+      .slice(0, 3)
+      .map((r) => r.reason?.message || String(r.reason));
 
     return NextResponse.json({
       success: true,
@@ -174,6 +178,7 @@ export async function POST(request: Request) {
       failed,
       total_eligible: profiles.length,
       selected: selected.length,
+      ...(failed > 0 && { sample_errors: errors }),
     });
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : "Unknown error";
