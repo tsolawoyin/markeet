@@ -118,10 +118,14 @@ export default function SignupForm() {
 
       case "email":
         if (!String(value).trim()) return "Email is required";
-        if (
-          !/^[a-zA-Z0-9._%+-]+@(stu|dlc)\.ui\.edu\.ng$/i.test(String(value))
-        ) {
-          return "Must be a valid @stu.ui.edu.ng or @dlc.ui.edu.ng email";
+        // TODO: Re-enable student email guard after testing
+        // if (
+        //   !/^[a-zA-Z0-9._%+-]+@(stu|dlc)\.ui\.edu\.ng$/i.test(String(value))
+        // ) {
+        //   return "Must be a valid @stu.ui.edu.ng or @dlc.ui.edu.ng email";
+        // }
+        if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/i.test(String(value))) {
+          return "Must be a valid email address";
         }
         return "";
 
