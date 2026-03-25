@@ -146,24 +146,42 @@ export async function POST(request: Request) {
     const subject =
       EMAIL_SUBJECTS[Math.floor(Math.random() * EMAIL_SUBJECTS.length)];
 
-    const results = await Promise.allSettled(
-      selected.map(async (user) => {
-        const firstName = user.full_name?.split(" ")[0] || "there";
+    const fromAddress = "Markeet <hello@mail.markeet.ng>";
 
-        const { error: sendError } = await resend.emails.send({
-          from: "Markeet <hello@markeet.ng>",
-          to: user.email,
-          subject,
-          html: getEmailHtml(firstName),
-        });
+    // Send in batches of 4 to stay under Resend's 5 req/sec limit
+    const BATCH_SIZE = 4;
+    const results: PromiseSettledResult<{ userId: string; email: string }>[] =
+      [];
 
-        if (sendError) {
-          throw new Error(sendError.message);
-        }
+    for (let i = 0; i < selected.length; i += BATCH_SIZE) {
+      const batch = selected.slice(i, i + BATCH_SIZE);
 
-        return { userId: user.id, email: user.email };
-      })
-    );
+      const batchResults = await Promise.allSettled(
+        batch.map(async (user) => {
+          const firstName = user.full_name?.split(" ")[0] || "there";
+
+          const { error: sendError } = await resend.emails.send({
+            from: fromAddress,
+            to: user.email,
+            subject,
+            html: getEmailHtml(firstName),
+          });
+
+          if (sendError) {
+            throw new Error(sendError.message);
+          }
+
+          return { userId: user.id, email: user.email };
+        })
+      );
+
+      results.push(...batchResults);
+
+      // Wait 1 second between batches to respect rate limit
+      if (i + BATCH_SIZE < selected.length) {
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+      }
+    }
 
     const sent = results.filter((r) => r.status === "fulfilled").length;
     const failed = results.filter((r) => r.status === "rejected").length;
